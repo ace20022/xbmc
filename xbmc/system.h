@@ -86,6 +86,7 @@
 #define HAS_WIN32_NETWORK
 #define HAS_IRSERVERSUITE
 #define HAS_FILESYSTEM_SMB
+#define HAVE_LIBBLURAY_BDJ
 
 #define DECLARE_UNUSED(a,b) a b;
 #endif
