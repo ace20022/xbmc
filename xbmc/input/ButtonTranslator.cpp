@@ -381,7 +381,6 @@ static const ActionMapping windows[] =
     { "fullscreenradio"          , WINDOW_FULLSCREEN_RADIO },          // virtual window for fullscreen radio, uses WINDOW_VISUALISATION as fallback
     { "visualisation"            , WINDOW_VISUALISATION },
     { "slideshow"                , WINDOW_SLIDESHOW },
-    { "filestackingdialog"       , WINDOW_DIALOG_FILESTACKING },
     { "karaoke"                  , WINDOW_KARAOKELYRICS },
     { "weather"                  , WINDOW_WEATHER },
     { "screensaver"              , WINDOW_SCREENSAVER },
@@ -390,7 +389,6 @@ static const ActionMapping windows[] =
     { "videotimeseek"            , WINDOW_VIDEO_TIME_SEEK },
     { "startwindow"              , WINDOW_START },
     { "startup"                  , WINDOW_STARTUP_ANIM },
-    { "peripherals"              , WINDOW_DIALOG_PERIPHERAL_MANAGER },
     { "peripheralsettings"       , WINDOW_DIALOG_PERIPHERAL_SETTINGS },
     { "extendedprogressdialog"   , WINDOW_DIALOG_EXT_PROGRESS },
     { "mediafilter"              , WINDOW_DIALOG_MEDIA_FILTER },

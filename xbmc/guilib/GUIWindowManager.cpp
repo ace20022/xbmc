@@ -97,7 +97,6 @@
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogVolumeBar.h"
 #include "dialogs/GUIDialogMuteBug.h"
-#include "video/dialogs/GUIDialogFileStacking.h"
 #include "dialogs/GUIDialogNumeric.h"
 #include "dialogs/GUIDialogGamepad.h"
 #include "dialogs/GUIDialogSubMenu.h"
@@ -144,7 +143,6 @@
 #include "music/karaoke/GUIWindowKaraokeLyrics.h"
 #endif
 
-#include "peripherals/dialogs/GUIDialogPeripheralManager.h"
 #include "peripherals/dialogs/GUIDialogPeripheralSettings.h"
 #include "addons/AddonCallbacksGUI.h"
 
@@ -246,7 +244,6 @@ void CGUIWindowManager::CreateWindows()
 
   Add(new CGUIDialogPlayEject);
 
-  Add(new CGUIDialogPeripheralManager);
   Add(new CGUIDialogPeripheralSettings);
 
   Add(new CGUIDialogMediaFilter);
@@ -289,7 +286,6 @@ void CGUIWindowManager::CreateWindows()
   Add(new CGUIWindowFullScreen);
   Add(new CGUIWindowVisualisation);
   Add(new CGUIWindowSlideShow);
-  Add(new CGUIDialogFileStacking);
 #ifdef HAS_KARAOKE
   Add(new CGUIWindowKaraokeLyrics);
 #endif
@@ -332,7 +328,6 @@ bool CGUIWindowManager::DestroyWindows()
     Delete(WINDOW_DIALOG_VIS_PRESET_LIST);
     Delete(WINDOW_DIALOG_SELECT);
     Delete(WINDOW_DIALOG_OK);
-    Delete(WINDOW_DIALOG_FILESTACKING);
     Delete(WINDOW_DIALOG_KEYBOARD);
     Delete(WINDOW_FULLSCREEN_VIDEO);
     Delete(WINDOW_DIALOG_PROFILE_SETTINGS);
