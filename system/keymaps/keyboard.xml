@@ -67,8 +67,8 @@
       <s>ActivateWindow(shutdownmenu)</s>
       <escape>PreviousMenu</escape>
       <i>Info</i>
-      <menu>Menu</menu>
-      <menu mod="longpress">ContextMenu</menu>
+      <menu>ContextMenu</menu>
+      <menu mod="longpress">Menu</menu>
       <c>ContextMenu</c>
       <space>Pause</space>
       <x>Stop</x>
@@ -165,6 +165,7 @@
       <a mod="ctrl,shift">Notification(MCEKeypress, DVD audio, 3)</a>
       <k mod="ctrl,shift">ReloadKeymaps</k>
       <d mod="ctrl,shift">ToggleDebug</d>
+      <r mod="ctrl,shift">ToggleDirtyRegionVisualization</r>
     </keyboard>
   </global>
   <LoginScreen>
