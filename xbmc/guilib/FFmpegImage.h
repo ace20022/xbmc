@@ -41,7 +41,6 @@ public:
                                           unsigned int &bufferoutSize);
   virtual void ReleaseThumbnailBuffer();
 private:
-  AVFrame* m_frame;
   AVPicture* m_pFrameRGB;
   int m_pitch;
 };

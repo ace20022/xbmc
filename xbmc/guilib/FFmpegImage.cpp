@@ -117,9 +117,13 @@ bool CFFmpegImage::LoadImageFromMemory(unsigned char* buffer, unsigned int bufSi
 
   AVFrame* frame = av_frame_alloc();
   AVPacket pkt;
+  av_init_packet(&pkt);
+  pkt.data = nullptr;
+  pkt.size = 0;
+
   av_read_frame(fctx, &pkt);
   int frame_decoded;
-  int ret = avcodec_decode_video2(codec_ctx, m_frame, &frame_decoded, &pkt);
+  int ret = avcodec_decode_video2(codec_ctx, frame, &frame_decoded, &pkt);
   if (ret < 0)
     CLog::Log(LOGDEBUG, "Error [%d] while decoding frame: %s\n", ret, strerror(AVERROR(ret)));
 
@@ -136,8 +140,8 @@ bool CFFmpegImage::LoadImageFromMemory(unsigned char* buffer, unsigned int bufSi
   if (!m_pFrameRGB)
     return false;
 
-  m_height = m_frame->height;
-  m_width = m_frame->width;
+  m_height = frame->height;
+  m_width = frame->width;
 
   // Due to a bug in swsscale we need to allocate one extra line of data
   if (avpicture_alloc(m_pFrameRGB, PIX_FMT_RGB32, m_width, m_height + 1) < 0)
@@ -147,12 +151,13 @@ bool CFFmpegImage::LoadImageFromMemory(unsigned char* buffer, unsigned int bufSi
   struct SwsContext * context = sws_getContext(codec_ctx->width, codec_ctx->height, codec_ctx->pix_fmt,
     m_width, m_height, PIX_FMT_RGB32, SWS_SPLINE, NULL, NULL, NULL);
 
-  sws_scale(context, m_frame->data, m_frame->linesize, 0, codec_ctx->height,
+  sws_scale(context, frame->data, frame->linesize, 0, codec_ctx->height,
     m_pFrameRGB->data, m_pFrameRGB->linesize);
   sws_freeContext(context);
 
   m_pitch = m_pFrameRGB->linesize[0];
 
+  av_frame_free(&frame);
   av_free_packet(&pkt);
   avcodec_close(codec_ctx);
   avformat_close_input(&fctx);
@@ -183,12 +188,6 @@ bool CFFmpegImage::Decode(unsigned char * const pixels, unsigned int pitch,
     }
   }
   return true;
-
-  av_image_copy_to_buffer(const_cast<uint8_t*>(pixels), pitch*m_height,
-                          m_frame->data, m_frame->linesize,
-                          (AVPixelFormat)m_frame->format,
-                          m_frame->width, m_frame->height, pitch);
-  return true;
 }
 
 bool CFFmpegImage::CreateThumbnailFromSurface(unsigned char* bufferin, unsigned int width,
@@ -203,5 +202,5 @@ bool CFFmpegImage::CreateThumbnailFromSurface(unsigned char* bufferin, unsigned 
 
 void CFFmpegImage::ReleaseThumbnailBuffer()
 {
-  av_freep(&m_frame);
+  av_freep(&m_pFrameRGB);
 }
