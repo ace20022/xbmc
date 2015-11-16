@@ -22,6 +22,7 @@
 #include "DVDFactoryInputStream.h"
 #include "DVDInputStream.h"
 #include "DVDInputStreamFile.h"
+#include "DVDInputStreamMpegDash.h"
 #include "DVDInputStreamNavigator.h"
 #include "DVDInputStreamFFmpeg.h"
 #include "DVDInputStreamPVRManager.h"
@@ -32,15 +33,30 @@
 #ifdef ENABLE_DVDINPUTSTREAM_STACK
 #include "DVDInputStreamStack.h"
 #endif
+#include "DVDInputStreamMultiSource.h"
 #include "FileItem.h"
 #include "storage/MediaManager.h"
 #include "URL.h"
 #include "filesystem/File.h"
 #include "utils/URIUtils.h"
+#include "Util.h"
 
 
-CDVDInputStream* CDVDFactoryInputStream::CreateInputStream(IDVDPlayer* pPlayer, const std::string& file, const std::string& content, bool contentlookup)
+CDVDInputStream* CDVDFactoryInputStream::CreateInputStream(IDVDPlayer* pPlayer, const std::string& file, const std::string& content, bool contentlookup, bool scanforextaudio)
 {
+  if (scanforextaudio)
+  {
+    // find any available external audio tracks
+    std::vector<std::string> filenames;
+    filenames.push_back(file);
+    CUtil::ScanForExternalAudio(file, filenames);
+    filenames.erase(unique(filenames.begin(), filenames.end()), filenames.end());
+    if (filenames.size() >= 2)
+    {
+      return CreateInputStream(pPlayer, filenames);
+    }
+  }
+
   CFileItem item(file.c_str(), false);
 
   item.SetMimeType(content);
@@ -78,6 +94,8 @@ CDVDInputStream* CDVDFactoryInputStream::CreateInputStream(IDVDPlayer* pPlayer, 
   else if (item.IsType(".bdmv") || item.IsType(".mpls") || file.substr(0, 7) == "bluray:")
     return new CDVDInputStreamBluray(pPlayer);
 #endif
+  else if (item.IsType(".mpd"))
+     return new CDVDInputStreamMpegDash();
   else if(file.substr(0, 6) == "rtp://"
        || file.substr(0, 7) == "rtsp://"
        || file.substr(0, 6) == "sdp://"
@@ -117,4 +135,9 @@ CDVDInputStream* CDVDFactoryInputStream::CreateInputStream(IDVDPlayer* pPlayer, 
 
   // our file interface handles all these types of streams
   return (new CDVDInputStreamFile());
+}
+
+CDVDInputStream* CDVDFactoryInputStream::CreateInputStream(IDVDPlayer* pPlayer, const std::vector<std::string>& filenames)
+{
+  return (new CDVDInputStreamMultiSource(pPlayer, filenames));
 }

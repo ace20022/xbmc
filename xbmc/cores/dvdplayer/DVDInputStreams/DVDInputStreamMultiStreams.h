@@ -1,7 +1,7 @@
 #pragma once
 
 /*
- *      Copyright (C) 2005-2013 Team XBMC
+ *      Copyright (C) 2005-2015 Team XBMC
  *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -20,15 +20,24 @@
  *
  */
 
+#include "DVDInputStream.h"
+
 #include <string>
 #include <vector>
 
-class CDVDInputStream;
+typedef std::shared_ptr<CDVDInputStream> InputStreamPtr;
 class IDVDPlayer;
 
-class CDVDFactoryInputStream
+class IDVDInputStreamMultiStreams : public CDVDInputStream
 {
+  friend class CDVDDemuxMultiSource;
+
 public:
-  static CDVDInputStream* CreateInputStream(IDVDPlayer* pPlayer, const std::string& file, const std::string& content, bool contentlookup = true, bool scanforextaudio = false);
-  static CDVDInputStream* CreateInputStream(IDVDPlayer* pPlayer, const std::vector<std::string>& filenames);
+  IDVDInputStreamMultiStreams(DVDStreamType type)
+    : CDVDInputStream(type) {}
+
+  virtual ~IDVDInputStreamMultiStreams() {};
+
+protected:
+  std::vector<InputStreamPtr> m_InputStreams;    // input streams for current playing file
 };

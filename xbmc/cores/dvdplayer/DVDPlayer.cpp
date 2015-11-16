@@ -479,6 +479,8 @@ void CSelectionStreams::Update(CDVDInputStream* input, CDVDDemux* demuxer, std::
     for(int i=0;i<count;i++)
     {
       CDemuxStream* stream = demuxer->GetStream(i);
+      if (!stream)
+        continue;
       /* skip streams with no type */
       if (stream->type == STREAM_NONE)
         continue;
@@ -747,7 +749,7 @@ bool CDVDPlayer::OpenInputStream()
     m_filename = g_mediaManager.TranslateDevicePath("");
   }
 
-  m_pInputStream = CDVDFactoryInputStream::CreateInputStream(this, m_filename, m_mimetype, m_item.ContentLookup());
+  m_pInputStream = CDVDFactoryInputStream::CreateInputStream(this, m_filename, m_mimetype, m_item.ContentLookup(), true);
   if(m_pInputStream == NULL)
   {
     CLog::Log(LOGERROR, "CDVDPlayer::OpenInputStream - unable to create input stream for [%s]", m_filename.c_str());
