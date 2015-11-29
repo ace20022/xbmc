@@ -48,7 +48,8 @@ public:
 
   bool SeekTime(int time, bool backwords = false, double* startpts = NULL);
   int GetStreamLength();
-  CDemuxStream* GetStream(int iStreamId);
+  CDemuxStream* GetStream(int64_t iStreamId);
+  const std::vector<CDemuxStream*> GetStreams() const;
   int GetNrOfStreams();
 
 protected:

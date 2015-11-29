@@ -72,7 +72,6 @@ bool CDVDDemuxShoutcast::Open(CDVDInputStream* pInput)
 
   // create new demuxer stream
   m_pDemuxStream = new CDemuxStreamAudioShoutcast();
-  m_pDemuxStream->iId = 0;
   m_pDemuxStream->iPhysicalId = 0;
   m_pDemuxStream->iDuration = 0;
   m_pDemuxStream->iChannels = 2;
@@ -130,7 +129,7 @@ DemuxPacket* CDVDDemuxShoutcast::Read()
   {
     pPacket->dts = DVD_NOPTS_VALUE;
     pPacket->pts = DVD_NOPTS_VALUE;
-    pPacket->iStreamId = 0;
+    pPacket->iStreamId = m_pDemuxStream->iId;
 
     // read the data
     int iRead = m_pInput->Read(pPacket->pData, iDataToRead);
@@ -178,9 +177,24 @@ int CDVDDemuxShoutcast::GetStreamLength()
   return 0;
 }
 
-CDemuxStream* CDVDDemuxShoutcast::GetStream(int iStreamId)
+CDemuxStream* CDVDDemuxShoutcast::GetStream(int64_t iStreamId)
 {
-  return m_pDemuxStream;
+  if (m_pDemuxStream && iStreamId == m_pDemuxStream->iId)
+    return m_pDemuxStream;
+  else
+    return nullptr;
+}
+
+const std::vector<CDemuxStream*> CDVDDemuxShoutcast::GetStreams() const
+{
+  std::vector<CDemuxStream*> streams;
+
+  if (m_pDemuxStream != nullptr)
+  {
+    streams.push_back(m_pDemuxStream);
+  }
+
+  return streams;
 }
 
 int CDVDDemuxShoutcast::GetNrOfStreams()
