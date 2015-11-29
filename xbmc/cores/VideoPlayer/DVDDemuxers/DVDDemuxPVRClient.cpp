@@ -105,6 +105,7 @@ CDVDDemuxPVRClient::CDVDDemuxPVRClient() : CDVDDemux()
 {
   m_pInput = NULL;
   for (int i = 0; i < MAX_STREAMS; i++) m_streams[i] = NULL;
+  m_stream_map.clear();
 }
 
 CDVDDemuxPVRClient::~CDVDDemuxPVRClient()
@@ -131,6 +132,7 @@ void CDVDDemuxPVRClient::Dispose()
     m_streams[i] = NULL;
   }
 
+  m_stream_map.clear();
   m_pInput = NULL;
 }
 
@@ -140,6 +142,16 @@ void CDVDDemuxPVRClient::DisposeStream(int iStreamId)
     return;
   delete m_streams[iStreamId];
   m_streams[iStreamId] = NULL;
+
+  std::map<int64_t, int>::iterator sp = m_stream_map.begin();
+  while (sp != m_stream_map.end())
+  {
+    if (sp->second == iStreamId)
+    {
+      m_stream_map.erase(sp);
+      break;
+    }
+  }
 }
 
 void CDVDDemuxPVRClient::Reset()
@@ -302,15 +314,35 @@ DemuxPacket* CDVDDemuxPVRClient::Read()
         && m_streams[pPacket->iStreamId])
   {
     ParsePacket(pPacket);
+    pPacket->iStreamId = m_streams[pPacket->iStreamId]->iId;
   }
 
   return pPacket;
 }
 
-CDemuxStream* CDVDDemuxPVRClient::GetStream(int iStreamId)
+CDemuxStream* CDVDDemuxPVRClient::GetStream(int64_t iStreamId)
 {
-  if (iStreamId < 0 || iStreamId >= MAX_STREAMS) return NULL;
-    return m_streams[iStreamId];
+  auto it = m_stream_map.find(iStreamId);
+  if (it == m_stream_map.end())
+    return nullptr;
+
+  if (it->second < 0 || it->second >= MAX_STREAMS) return NULL;
+    return m_streams[it->second];
+}
+
+const std::vector<CDemuxStream*> CDVDDemuxPVRClient::GetStreams() const
+{
+  std::vector<CDemuxStream*> streams;
+
+  for (auto& iter : m_streams)
+  {
+    if (iter != nullptr)
+    {
+      streams.push_back(iter);
+    }
+  }
+
+  return streams;
 }
 
 void CDVDDemuxPVRClient::RequestStreams()
@@ -434,7 +466,7 @@ void CDVDDemuxPVRClient::RequestStreams()
     }
 
     m_streams[i]->codec       = (AVCodecID)props.stream[i].iCodecId;
-    m_streams[i]->iId         = i;
+    m_stream_map[m_streams[i]->iId] = i;
     m_streams[i]->iPhysicalId = props.stream[i].iPhysicalId;
     m_streams[i]->language[0] = props.stream[i].strLanguage[0];
     m_streams[i]->language[1] = props.stream[i].strLanguage[1];
@@ -475,7 +507,7 @@ std::string CDVDDemuxPVRClient::GetFileName()
     return "";
 }
 
-void CDVDDemuxPVRClient::GetStreamCodecName(int iStreamId, std::string &strName)
+void CDVDDemuxPVRClient::GetStreamCodecName(int64_t iStreamId, std::string &strName)
 {
   CDemuxStream *stream = GetStream(iStreamId);
   if (stream)

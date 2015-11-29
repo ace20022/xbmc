@@ -97,10 +97,11 @@ public:
   bool SeekTime(int time, bool backwords = false, double* startpts = NULL);
   void SetSpeed(int iSpeed);
   int GetStreamLength() { return 0; }
-  CDemuxStream* GetStream(int iStreamId);
+  CDemuxStream* GetStream(int64_t iStreamId);
+  const std::vector<CDemuxStream*> GetStreams() const;
   int GetNrOfStreams();
   std::string GetFileName();
-  virtual void GetStreamCodecName(int iStreamId, std::string &strName);
+  virtual void GetStreamCodecName(int64_t iStreamId, std::string &strName);
 
 protected:
   CDVDInputStream* m_pInput;
@@ -108,6 +109,7 @@ protected:
   #define MAX_STREAMS 100
 #endif
   CDemuxStream* m_streams[MAX_STREAMS]; // maximum number of streams that ffmpeg can handle
+  std::map<int64_t, int> m_stream_map;
   std::shared_ptr<PVR::CPVRClient> m_pvrClient;
 
 private:
