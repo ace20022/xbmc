@@ -24,12 +24,12 @@
 
 TEST(TestStreamUtils, General)
 {
-  EXPECT_EQ(0, StreamUtils::GetCodecPriority(""));
-  EXPECT_EQ(1, StreamUtils::GetCodecPriority("ac3"));
-  EXPECT_EQ(2, StreamUtils::GetCodecPriority("dca"));
-  EXPECT_EQ(3, StreamUtils::GetCodecPriority("eac3"));
-  EXPECT_EQ(4, StreamUtils::GetCodecPriority("dtshd_hra"));
-  EXPECT_EQ(5, StreamUtils::GetCodecPriority("dtshd_ma"));
-  EXPECT_EQ(6, StreamUtils::GetCodecPriority("truehd"));
-  EXPECT_EQ(7, StreamUtils::GetCodecPriority("flac"));
+  EXPECT_EQ(0, StreamUtils::GetCodecPriority(AV_CODEC_ID_NONE, FF_PROFILE_UNKNOWN));
+  EXPECT_EQ(1, StreamUtils::GetCodecPriority(AV_CODEC_ID_AC3, FF_PROFILE_UNKNOWN));
+  EXPECT_EQ(2, StreamUtils::GetCodecPriority(AV_CODEC_ID_DTS, FF_PROFILE_UNKNOWN));
+  EXPECT_EQ(3, StreamUtils::GetCodecPriority(AV_CODEC_ID_EAC3, FF_PROFILE_UNKNOWN));
+  EXPECT_EQ(4, StreamUtils::GetCodecPriority(AV_CODEC_ID_DTS, FF_PROFILE_DTS_HD_HRA));
+  EXPECT_EQ(5, StreamUtils::GetCodecPriority(AV_CODEC_ID_DTS, FF_PROFILE_DTS_HD_MA));
+  EXPECT_EQ(6, StreamUtils::GetCodecPriority(AV_CODEC_ID_TRUEHD, FF_PROFILE_UNKNOWN));
+  EXPECT_EQ(7, StreamUtils::GetCodecPriority(AV_CODEC_ID_FLAC, FF_PROFILE_UNKNOWN));
 }

@@ -225,8 +225,8 @@ static bool PredicateAudioPriority(const SelectionStream& lh, const SelectionStr
   PREDICATE_RETURN(lh.channels
                  , rh.channels);
 
-  PREDICATE_RETURN(StreamUtils::GetCodecPriority(lh.codec)
-                 , StreamUtils::GetCodecPriority(rh.codec));
+  PREDICATE_RETURN(StreamUtils::GetCodecPriority(lh.codec_id, lh.codec_profile)
+                 , StreamUtils::GetCodecPriority(rh.codec_id, rh.codec_profile));
 
   PREDICATE_RETURN(lh.flags & CDemuxStream::FLAG_DEFAULT
                  , rh.flags & CDemuxStream::FLAG_DEFAULT);
@@ -514,7 +514,9 @@ void CSelectionStreams::Update(CDVDInputStream* input, CDVDDemux* demuxer, std::
       s.filename = demuxer->GetFileName();
       s.filename2 = filename2;
       s.name = stream->GetStreamName();
-      s.codec    = demuxer->GetStreamCodecName(stream->iId);
+      s.codec_name    = demuxer->GetStreamCodecName(stream->iId);
+      s.codec_id = stream->codec;
+      s.codec_profile = stream->profile;
       s.channels = 0; // Default to 0. Overwrite if STREAM_AUDIO below.
       if(stream->type == STREAM_VIDEO)
       {
@@ -4486,7 +4488,7 @@ void CVideoPlayer::GetVideoStreamInfo(int streamId, SPlayerVideoStreamInfo &info
   info.height = s.height;
   info.SrcRect = s.SrcRect;
   info.DestRect = s.DestRect;
-  info.videoCodecName = s.codec;
+  info.videoCodecName = s.codec_name;
   info.videoAspectRatio = s.aspect_ratio;
   info.stereoMode = s.stereo_mode;
 }
@@ -4520,7 +4522,7 @@ void CVideoPlayer::GetAudioStreamInfo(int index, SPlayerAudioStreamInfo &info)
 
   info.bitrate = s.bitrate;
   info.channels = s.channels;
-  info.audioCodecName = s.codec;
+  info.audioCodecName = s.codec_name;
 }
 
 int CVideoPlayer::AddSubtitleFile(const std::string& filename, const std::string& subfilename)

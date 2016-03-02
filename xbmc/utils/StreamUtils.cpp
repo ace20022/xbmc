@@ -20,25 +20,29 @@
 
 #include "StreamUtils.h"
 
-int StreamUtils::GetCodecPriority(const std::string &codec)
+int StreamUtils::GetCodecPriority(AVCodecID codecId, int codecProfile)
 {
   /*
    * Technically flac, truehd, and dtshd_ma are equivalently good as they're all lossless. However,
    * ffmpeg can't decode dtshd_ma losslessy yet.
    */
-  if (codec == "flac") // Lossless FLAC
+  if (codecId == AV_CODEC_ID_FLAC) // Lossless FLAC
     return 7;
-  if (codec == "truehd") // Dolby TrueHD
+  if (codecId == AV_CODEC_ID_TRUEHD) // Dolby TrueHD
     return 6;
-  if (codec == "dtshd_ma") // DTS-HD Master Audio (previously known as DTS++)
-    return 5;
-  if (codec == "dtshd_hra") // DTS-HD High Resolution Audio
-    return 4;
-  if (codec == "eac3") // Dolby Digital Plus
-    return 3;
-  if (codec == "dca") // DTS
+  if (codecId == AV_CODEC_ID_DTS)
+  {
+    if (codecProfile == FF_PROFILE_DTS_HD_MA)  // DTS-HD Master Audio (previously known as DTS++)
+      return 5;
+    if (codecProfile == FF_PROFILE_DTS_HD_HRA) // DTS-HD High Resolution Audio
+      return 4;
+    
     return 2;
-  if (codec == "ac3") // Dolby Digital
+  }
+  if (codecId == AV_CODEC_ID_EAC3) // Dolby Digital Plus
+    return 3;
+  if (codecId == AV_CODEC_ID_AC3) // Dolby Digital
     return 1;
+
   return 0;
 }

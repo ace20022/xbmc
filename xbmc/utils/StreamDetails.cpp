@@ -128,7 +128,7 @@ bool CStreamDetailAudio::IsWorseThan(CStreamDetail *that)
     return false;
 
   // In case of a tie, revert to codec priority
-  return StreamUtils::GetCodecPriority(sda->m_strCodec) > StreamUtils::GetCodecPriority(m_strCodec);
+  return StreamUtils::GetCodecPriority(sda->m_codec_id, sda->m_codec_profile) > StreamUtils::GetCodecPriority(m_codec_id, m_codec_profile);
 }
 
 CStreamDetailSubtitle::CStreamDetailSubtitle() :

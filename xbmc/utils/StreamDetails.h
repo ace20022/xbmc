@@ -24,6 +24,10 @@
 #include <string>
 #include <vector>
 
+extern "C" {
+#include "libavcodec/avcodec.h"
+}
+
 class CStreamDetails;
 class CVariant;
 
@@ -74,6 +78,8 @@ public:
   virtual bool IsWorseThan(CStreamDetail *that);
 
   int m_iChannels;
+  AVCodecID   m_codec_id = AV_CODEC_ID_NONE;
+  int         m_codec_profile = FF_PROFILE_UNKNOWN;
   std::string m_strCodec;
   std::string m_strLanguage;
 };

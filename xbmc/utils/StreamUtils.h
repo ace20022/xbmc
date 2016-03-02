@@ -21,8 +21,12 @@
 
 #include <string>
 
+extern "C" {
+#include "libavcodec/avcodec.h"
+}
+
 class StreamUtils
 {
 public:
-  static int GetCodecPriority(const std::string &codec);
+  static int GetCodecPriority(AVCodecID codecId, int codecProfile);
 };

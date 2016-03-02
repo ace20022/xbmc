@@ -111,6 +111,8 @@ public:
   unsigned int codec_fourcc; // if available
   int profile; // encoder profile of the stream reported by the decoder. used to qualify hw decoders.
   int level;   // encoder level of the stream reported by the decoder. used to qualify hw decoders.
+  std::string codec_name;
+  std::string profile_name;
   StreamType type;
   int source;
   bool realtime;
@@ -199,6 +201,7 @@ public:
   int iBitRate;
   int iBitsPerSample;
   uint64_t iChannelLayout;
+  std::string m_channelLayout;
 };
 
 class CDemuxStreamSubtitle : public CDemuxStream

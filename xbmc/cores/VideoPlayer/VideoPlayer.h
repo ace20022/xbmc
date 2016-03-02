@@ -179,7 +179,9 @@ typedef struct SelectionStream
   CDemuxStream::EFlags flags = CDemuxStream::FLAG_NONE;
   int          source = 0;
   int          id = 0;
-  std::string  codec;
+  AVCodecID    codec_id = AV_CODEC_ID_NONE;
+  int          codec_profile = FF_PROFILE_UNKNOWN;
+  std::string  codec_name;
   int          channels = 0;
   int          bitrate = 0;
   int          width = 0;
