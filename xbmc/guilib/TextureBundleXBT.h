@@ -48,6 +48,8 @@ public:
                 int &width, int &height, int& nLoops, int** ppDelays);
 
   static uint8_t* UnpackFrame(const CXBTFReader& reader, const CXBTFFrame& frame);
+  
+  bool CloseBundle();
 
 private:
   bool OpenBundle();
