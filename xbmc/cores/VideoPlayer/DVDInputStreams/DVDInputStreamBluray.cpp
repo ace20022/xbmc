@@ -199,6 +199,7 @@ CDVDInputStreamBluray::CDVDInputStreamBluray(IVideoPlayer* player, const CFileIt
 {
   m_disc_info = nullptr;
   m_title_info = nullptr;
+  m_title = nullptr;
   m_clip  = (uint32_t)-1;
   m_angle = 0;
   m_playlist = (uint32_t)-1;
@@ -455,6 +456,7 @@ void CDVDInputStreamBluray::Close()
   m_bd = NULL;
   m_title_info = NULL;
   m_disc_info = nullptr;
+  m_title = nullptr;
 }
 
 void CDVDInputStreamBluray::ProcessEvent() {
@@ -524,6 +526,7 @@ void CDVDInputStreamBluray::ProcessEvent() {
       if(m_title_info)
         m_dll->bd_free_title_info(m_title_info);
       m_title_info = m_dll->bd_get_playlist_info(m_bd, m_playlist, m_angle);
+      setCurrentTitle();
     }
     break;
 
@@ -534,11 +537,16 @@ void CDVDInputStreamBluray::ProcessEvent() {
     if (m_title_info)
       m_dll->bd_free_title_info(m_title_info);
     m_title_info = NULL;
+    m_title = nullptr;
     break;
 
   case BD_EVENT_TITLE:
     CLog::Log(LOGDEBUG, "CDVDInputStreamBluray - BD_EVENT_TITLE %d",
         m_event.param);
+    if (m_title_info)
+      m_dll->bd_free_title_info(m_title_info);
+    m_title_info = m_dll->bd_get_title_info(m_bd, m_event.param, m_angle);
+    setCurrentTitle();
     break;
 
   case BD_EVENT_PLAYLIST:
@@ -548,6 +556,7 @@ void CDVDInputStreamBluray::ProcessEvent() {
     if(m_title_info)
       m_dll->bd_free_title_info(m_title_info);
     m_title_info = m_dll->bd_get_playlist_info(m_bd, m_playlist, m_angle);
+    setCurrentTitle();
     break;
 
   case BD_EVENT_PLAYITEM:
@@ -1226,6 +1235,16 @@ void CDVDInputStreamBluray::SetupPlayerSettings()
   m_dll->bd_set_player_setting_str(m_bd, 400, persistentDir.c_str());
   m_dll->bd_set_player_setting_str(m_bd, 401, cacheDir.c_str());
 #endif
+}
+
+void CDVDInputStreamBluray::setCurrentTitle()
+{
+  if (!m_title_info)
+    return;
+
+  if (m_title_info->idx <= m_disc_info->num_titles)
+    m_title = m_disc_info->titles[m_title_info->idx];
+
 }
 
 #endif
