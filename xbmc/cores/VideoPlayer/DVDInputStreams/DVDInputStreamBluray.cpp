@@ -198,7 +198,7 @@ CDVDInputStreamBluray::CDVDInputStreamBluray(IVideoPlayer* player, const CFileIt
   CDVDInputStream(DVDSTREAM_TYPE_BLURAY, fileitem)
 {
   m_disc_info = nullptr;
-  m_title = NULL;
+  m_title_info = nullptr;
   m_clip  = (uint32_t)-1;
   m_angle = 0;
   m_playlist = (uint32_t)-1;
@@ -376,12 +376,12 @@ bool CDVDInputStreamBluray::Open()
   if (URIUtils::HasExtension(filename, ".mpls"))
   {
     m_navmode = false;
-    m_title = GetTitleFile(filename);
+    m_title_info = GetTitleFile(filename);
   }
   else if (mode == BD_PLAYBACK_MAIN_TITLE)
   {
     m_navmode = false;
-    m_title = GetTitleLongest();
+    m_title_info = GetTitleLongest();
   }
   else
   {
@@ -396,7 +396,7 @@ bool CDVDInputStreamBluray::Open()
     }
 
     if(!m_navmode)
-      m_title = GetTitleLongest();
+      m_title_info = GetTitleLongest();
   }
 
   SetupPlayerSettings();
@@ -419,15 +419,15 @@ bool CDVDInputStreamBluray::Open()
   }
   else
   {
-    if(!m_title)
+    if(!m_title_info)
     {
       CLog::Log(LOGERROR, "CDVDInputStreamBluray::Open - failed to get title info");
       return false;
     }
 
-    if(m_dll->bd_select_playlist(m_bd, m_title->playlist) == 0 )
+    if(m_dll->bd_select_playlist(m_bd, m_title_info->playlist) == 0 )
     {
-      CLog::Log(LOGERROR, "CDVDInputStreamBluray::Open - failed to select title %d", m_title->idx);
+      CLog::Log(LOGERROR, "CDVDInputStreamBluray::Open - failed to select title %d", m_title_info->idx);
       return false;
     }
     m_clip = 0;
@@ -445,15 +445,15 @@ void CDVDInputStreamBluray::Close()
 {
   if (!m_dll)
     return;
-  if(m_title)
-    m_dll->bd_free_title_info(m_title);
+  if(m_title_info)
+    m_dll->bd_free_title_info(m_title_info);
   if(m_bd)
   {
     m_dll->bd_register_overlay_proc(m_bd, NULL, NULL);
     m_dll->bd_close(m_bd);
   }
   m_bd = NULL;
-  m_title = NULL;
+  m_title_info = NULL;
   m_disc_info = nullptr;
 }
 
@@ -521,9 +521,9 @@ void CDVDInputStreamBluray::ProcessEvent() {
 
     if (m_playlist <= MAX_PLAYLIST_ID)
     {
-      if(m_title)
-        m_dll->bd_free_title_info(m_title);
-      m_title = m_dll->bd_get_playlist_info(m_bd, m_playlist, m_angle);
+      if(m_title_info)
+        m_dll->bd_free_title_info(m_title_info);
+      m_title_info = m_dll->bd_get_playlist_info(m_bd, m_playlist, m_angle);
     }
     break;
 
@@ -531,9 +531,9 @@ void CDVDInputStreamBluray::ProcessEvent() {
     CLog::Log(LOGDEBUG, "CDVDInputStreamBluray - BD_EVENT_END_OF_TITLE %d",
         m_event.param);
     /* when a title ends, playlist WILL eventually change */
-    if (m_title)
-      m_dll->bd_free_title_info(m_title);
-    m_title = NULL;
+    if (m_title_info)
+      m_dll->bd_free_title_info(m_title_info);
+    m_title_info = NULL;
     break;
 
   case BD_EVENT_TITLE:
@@ -545,9 +545,9 @@ void CDVDInputStreamBluray::ProcessEvent() {
     CLog::Log(LOGDEBUG, "CDVDInputStreamBluray - BD_EVENT_PLAYLIST %d",
         m_event.param);
     m_playlist = m_event.param;
-    if(m_title)
-      m_dll->bd_free_title_info(m_title);
-    m_title = m_dll->bd_get_playlist_info(m_bd, m_playlist, m_angle);
+    if(m_title_info)
+      m_dll->bd_free_title_info(m_title_info);
+    m_title_info = m_dll->bd_get_playlist_info(m_bd, m_playlist, m_angle);
     break;
 
   case BD_EVENT_PLAYITEM:
@@ -565,10 +565,10 @@ void CDVDInputStreamBluray::ProcessEvent() {
 
   case BD_EVENT_AUDIO_STREAM:
     pid = -1;
-    if (m_title && m_title->clip_count > m_clip
-        && m_title->clips[m_clip].audio_stream_count
+    if (m_title_info && m_title_info->clip_count > m_clip
+        && m_title_info->clips[m_clip].audio_stream_count
             > (uint8_t) (m_event.param - 1))
-      pid = m_title->clips[m_clip].audio_streams[m_event.param - 1].pid;
+      pid = m_title_info->clips[m_clip].audio_streams[m_event.param - 1].pid;
     CLog::Log(LOGDEBUG, "CDVDInputStreamBluray - BD_EVENT_AUDIO_STREAM %d %d",
         m_event.param, pid);
     m_player->OnDiscNavResult(static_cast<void*>(&pid), BD_EVENT_AUDIO_STREAM);
@@ -583,10 +583,10 @@ void CDVDInputStreamBluray::ProcessEvent() {
 
   case BD_EVENT_PG_TEXTST_STREAM:
     pid = -1;
-    if (m_title && m_title->clip_count > m_clip
-        && m_title->clips[m_clip].pg_stream_count
+    if (m_title_info && m_title_info->clip_count > m_clip
+        && m_title_info->clips[m_clip].pg_stream_count
             > (uint8_t) (m_event.param - 1))
-      pid = m_title->clips[m_clip].pg_streams[m_event.param - 1].pid;
+      pid = m_title_info->clips[m_clip].pg_streams[m_event.param - 1].pid;
     CLog::Log(LOGDEBUG,
         "CDVDInputStreamBluray - BD_EVENT_PG_TEXTST_STREAM %d, %d",
         m_event.param, pid);
@@ -940,8 +940,8 @@ void CDVDInputStreamBluray::OverlayCallbackARGB(const struct bd_argb_overlay_s *
 
 int CDVDInputStreamBluray::GetTotalTime()
 {
-  if(m_title)
-    return (int)(m_title->duration / 90);
+  if(m_title_info)
+    return (int)(m_title_info->duration / 90);
   else
     return 0;
 }
@@ -964,15 +964,15 @@ bool CDVDInputStreamBluray::PosTime(int ms)
 
 int CDVDInputStreamBluray::GetChapterCount()
 {
-  if(m_title)
-    return m_title->chapter_count;
+  if(m_title_info)
+    return m_title_info->chapter_count;
   else
     return 0;
 }
 
 int CDVDInputStreamBluray::GetChapter()
 {
-  if(m_title)
+  if(m_title_info)
     return m_dll->bd_get_current_chapter(m_bd) + 1;
   else
     return 0;
@@ -980,7 +980,7 @@ int CDVDInputStreamBluray::GetChapter()
 
 bool CDVDInputStreamBluray::SeekChapter(int ch)
 {
-  if(m_title && m_dll->bd_seek_chapter(m_bd, ch-1) < 0)
+  if(m_title_info && m_dll->bd_seek_chapter(m_bd, ch-1) < 0)
     return false;
 
   while (m_dll->bd_get_event(m_bd, &m_event))
@@ -994,8 +994,8 @@ int64_t CDVDInputStreamBluray::GetChapterPos(int ch)
   if (ch == -1 || ch > GetChapterCount())
     ch = GetChapter();
 
-  if (m_title && m_title->chapters)
-    return m_title->chapters[ch - 1].start / 90000;
+  if (m_title_info && m_title_info->chapters)
+    return m_title_info->chapters[ch - 1].start / 90000;
   else
     return 0;
 }
@@ -1056,10 +1056,10 @@ static bool find_stream(int pid, BLURAY_STREAM_INFO *info, int count, char* lang
 
 void CDVDInputStreamBluray::GetStreamInfo(int pid, char* language)
 {
-  if(!m_title || m_clip >= m_title->clip_count)
+  if(!m_title_info || m_clip >= m_title_info->clip_count)
     return;
 
-  BLURAY_CLIP_INFO *clip = m_title->clips+m_clip;
+  BLURAY_CLIP_INFO *clip = m_title_info->clips+m_clip;
 
   if(find_stream(pid, clip->audio_streams, clip->audio_stream_count, language))
     return;

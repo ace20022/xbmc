@@ -135,7 +135,7 @@ protected:
   DllLibbluray*       m_dll;
   BLURAY*             m_bd;
   const BLURAY_DISC_INFO* m_disc_info;
-  BLURAY_TITLE_INFO*  m_title;
+  BLURAY_TITLE_INFO*  m_title_info;
   uint32_t            m_playlist;
   uint32_t            m_clip;
   uint32_t            m_angle;
