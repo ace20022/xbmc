@@ -1142,6 +1142,9 @@ bool CDVDInputStreamBluray::MouseClick(const CPoint &point)
 
 void CDVDInputStreamBluray::OnMenu()
 {
+  if (IsInMenu())
+    return;
+
   if(m_bd == NULL || !m_navmode)
   {
     CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::OnMenu - navigation mode not enabled");
