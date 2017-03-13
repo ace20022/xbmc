@@ -1122,6 +1122,10 @@ bool CDVDInputStreamBluray::MouseMove(const CPoint &point)
   if (m_bd == NULL || !m_navmode)
     return false;
 
+  // mouse support is not implemented for bdj menus in libbluray as of version 1.0.0
+  if (m_title && m_title->bdj)
+    return false;
+
   if (m_dll->bd_mouse_select(m_bd, -1, (uint16_t)point.x, (uint16_t)point.y) < 0)
   {
     CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::MouseMove - mouse select failed");
@@ -1134,6 +1138,10 @@ bool CDVDInputStreamBluray::MouseMove(const CPoint &point)
 bool CDVDInputStreamBluray::MouseClick(const CPoint &point)
 {
   if (m_bd == NULL || !m_navmode)
+    return false;
+
+  // mouse support is not implemented for bdj menus in libbluray as of version 1.0.0
+  if (m_title && m_title->bdj)
     return false;
 
   if (m_dll->bd_mouse_select(m_bd, -1, (uint16_t)point.x, (uint16_t)point.y) < 0)
