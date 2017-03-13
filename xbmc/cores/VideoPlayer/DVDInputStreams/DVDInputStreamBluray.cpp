@@ -197,6 +197,7 @@ void  bluray_overlay_argb_cb(void *this_gen, const struct bd_argb_overlay_s * co
 CDVDInputStreamBluray::CDVDInputStreamBluray(IVideoPlayer* player, const CFileItem& fileitem) :
   CDVDInputStream(DVDSTREAM_TYPE_BLURAY, fileitem)
 {
+  m_disc_info = nullptr;
   m_title = NULL;
   m_clip  = (uint32_t)-1;
   m_angle = 0;
@@ -333,40 +334,38 @@ bool CDVDInputStreamBluray::Open()
     return false;
   }
 
-  const BLURAY_DISC_INFO *disc_info;
+  m_disc_info = m_dll->bd_get_disc_info(m_bd);
 
-  disc_info = m_dll->bd_get_disc_info(m_bd);
-
-  if (!disc_info)
+  if (!m_disc_info)
   {
     CLog::Log(LOGERROR, "CDVDInputStreamBluray::Open - bd_get_disc_info() failed");
     return false;
   }
 
-  if (disc_info->bluray_detected)
+  if (m_disc_info->bluray_detected)
   {
-    CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::Open - First Play supported: %d", disc_info->first_play_supported);
-    CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::Open - Top menu supported  : %d", disc_info->top_menu_supported);
-    CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::Open - HDMV titles         : %d", disc_info->num_hdmv_titles);
-    CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::Open - BD-J titles         : %d", disc_info->num_bdj_titles);
-    CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::Open - UNSUPPORTED titles  : %d", disc_info->num_unsupported_titles);
-    CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::Open - AACS detected       : %d", disc_info->aacs_detected);
-    CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::Open - libaacs detected    : %d", disc_info->libaacs_detected);
-    CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::Open - AACS handled        : %d", disc_info->aacs_handled);
-    CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::Open - BD+ detected        : %d", disc_info->bdplus_detected);
-    CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::Open - libbdplus detected  : %d", disc_info->libbdplus_detected);
-    CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::Open - BD+ handled         : %d", disc_info->bdplus_handled);
+    CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::Open - First Play supported: %d", m_disc_info->first_play_supported);
+    CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::Open - Top menu supported  : %d", m_disc_info->top_menu_supported);
+    CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::Open - HDMV titles         : %d", m_disc_info->num_hdmv_titles);
+    CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::Open - BD-J titles         : %d", m_disc_info->num_bdj_titles);
+    CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::Open - UNSUPPORTED titles  : %d", m_disc_info->num_unsupported_titles);
+    CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::Open - AACS detected       : %d", m_disc_info->aacs_detected);
+    CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::Open - libaacs detected    : %d", m_disc_info->libaacs_detected);
+    CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::Open - AACS handled        : %d", m_disc_info->aacs_handled);
+    CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::Open - BD+ detected        : %d", m_disc_info->bdplus_detected);
+    CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::Open - libbdplus detected  : %d", m_disc_info->libbdplus_detected);
+    CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::Open - BD+ handled         : %d", m_disc_info->bdplus_handled);
   }
   else
     CLog::Log(LOGERROR, "CDVDInputStreamBluray::Open - BluRay not detected");
 
-  if (disc_info->aacs_detected && !disc_info->aacs_handled)
+  if (m_disc_info->aacs_detected && !m_disc_info->aacs_handled)
   {
     CLog::Log(LOGERROR, "CDVDInputStreamBluray::Open - Media stream scrambled/encrypted with AACS");
     return false;
   }
 
-  if (disc_info->bdplus_detected && !disc_info->bdplus_handled)
+  if (m_disc_info->bdplus_detected && !m_disc_info->bdplus_handled)
   {
     CLog::Log(LOGERROR, "CDVDInputStreamBluray::Open - Media stream scrambled/encrypted with BD+");
     return false;
@@ -387,12 +386,12 @@ bool CDVDInputStreamBluray::Open()
   else
   {
     m_navmode = true;
-    if (m_navmode && !disc_info->first_play_supported) {
+    if (m_navmode && !m_disc_info->first_play_supported) {
       CLog::Log(LOGERROR, "CDVDInputStreamBluray::Open - Can't play disc in HDMV navigation mode - First Play title not supported");
       m_navmode = false;
     }
 
-    if (m_navmode && disc_info->num_unsupported_titles > 0) {
+    if (m_navmode && m_disc_info->num_unsupported_titles > 0) {
       CLog::Log(LOGERROR, "CDVDInputStreamBluray::Open - Unsupported titles found - Some titles can't be played in navigation mode");
     }
 
@@ -455,6 +454,7 @@ void CDVDInputStreamBluray::Close()
   }
   m_bd = NULL;
   m_title = NULL;
+  m_disc_info = nullptr;
 }
 
 void CDVDInputStreamBluray::ProcessEvent() {
