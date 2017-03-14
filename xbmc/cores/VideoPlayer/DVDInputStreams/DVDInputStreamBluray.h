@@ -96,6 +96,9 @@ public:
 
   void UserInput(bd_vk_key_e vk);
   bool MouseMove(const CPoint &point);
+
+  bool IsBdjTitle();
+
   bool MouseClick(const CPoint &point);
 
   int GetChapter();

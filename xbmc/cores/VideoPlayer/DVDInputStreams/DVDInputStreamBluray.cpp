@@ -534,14 +534,19 @@ void CDVDInputStreamBluray::ProcessEvent() {
     CLog::Log(LOGDEBUG, "CDVDInputStreamBluray - BD_EVENT_END_OF_TITLE %d",
         m_event.param);
     /* when a title ends, playlist WILL eventually change */
-    if (m_title_info)
+    if (m_title_info && m_title_info->idx == m_event.param)
+    {
       m_dll->bd_free_title_info(m_title_info);
-    m_title_info = NULL;
-    m_title = nullptr;
+      m_title_info = NULL;
+      m_title = nullptr;
+    }
     break;
 
   case BD_EVENT_TITLE:
-    CLog::Log(LOGDEBUG, "CDVDInputStreamBluray - BD_EVENT_TITLE %d",
+    if (m_event.param == BLURAY_TITLE_FIRST_PLAY)
+      CLog::Log(LOGDEBUG, "CDVDInputStreamBluray - BD_EVENT_TITLE: BLURAY_TITLE_FIRST_PLAY");
+    else
+      CLog::Log(LOGDEBUG, "CDVDInputStreamBluray - BD_EVENT_TITLE %d",
         m_event.param);
     if (m_title_info)
       m_dll->bd_free_title_info(m_title_info);
@@ -609,7 +614,7 @@ void CDVDInputStreamBluray::ProcessEvent() {
     break;
 
   case BD_EVENT_IDLE:
-    Sleep(100);
+    Sleep(1000);
     break;
 
   case BD_EVENT_SOUND_EFFECT:
@@ -1123,7 +1128,7 @@ bool CDVDInputStreamBluray::MouseMove(const CPoint &point)
     return false;
 
   // mouse support is not implemented for bdj menus in libbluray as of version 1.0.0
-  if (m_title && m_title->bdj)
+  if (IsBdjTitle())
     return false;
 
   if (m_dll->bd_mouse_select(m_bd, -1, (uint16_t)point.x, (uint16_t)point.y) < 0)
@@ -1250,6 +1255,19 @@ void CDVDInputStreamBluray::setCurrentTitle()
   if (m_title_info->idx <= m_disc_info->num_titles)
     m_title = m_disc_info->titles[m_title_info->idx];
 
+}
+
+bool CDVDInputStreamBluray::IsBdjTitle()
+{
+  if (m_title && m_title->bdj)
+    return true;
+  
+  if (m_disc_info)
+  {
+    if(m_title_info->idx == (m_disc_info->num_titles - 1))
+      return (m_disc_info->first_play && m_disc_info->first_play->bdj);
+  }
+  return false;
 }
 
 #endif
