@@ -4035,6 +4035,25 @@ int CVideoPlayer::OnDiscNavResult(void* pData, int iMessage)
       }
     }
     break;
+    case BD_EVENT_STILL:
+    {
+      bool still = *(int*)pData != 0;
+
+      if (still)
+      {
+        m_dvd.iDVDStillTime = 0;
+        m_dvd.iDVDStillStartTime = XbmcThreads::SystemClockMillis();
+        m_dvd.state = DVDSTATE_STILL;
+        CLog::Log(LOGDEBUG, "BD_EVENT_STILL - infinite still time");
+      }
+      else
+      {
+        m_dvd.iDVDStillStartTime = 0;
+        m_dvd.iDVDStillTime = 1;
+        m_dvd.state = DVDSTATE_NORMAL;
+      }      
+    }
+    break;
     case BD_EVENT_MENU_ERROR:
     {
       m_dvd.state = DVDSTATE_NORMAL;
