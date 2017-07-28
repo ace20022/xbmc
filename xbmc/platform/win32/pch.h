@@ -19,6 +19,9 @@
  */
 #pragma once
 #define _CRT_RAND_S
+#include <assert.h>
+#include <atomic>
+#include <set>
 #include <vector>
 #include <map>
 #include <string>
@@ -46,6 +49,18 @@
 #include <d3d9types.h>
 #endif
 #include <memory>
+
 // anything below here should be headers that very rarely (hopefully never)
 // change yet are included almost everywhere.
 /* empty */
+
+#include "threads/Thread.h"
+#include "threads/Condition.h"
+#include "threads/Event.h"
+#include "utils/StringUtils.h"
+#include "utils/log.h"
+#include "util.h"
+#include "pvr/PVRManager.h"
+#include "cores/AudioEngine/Engines/ActiveAE/ActiveAE.h"
+#include "Application.h"
+
