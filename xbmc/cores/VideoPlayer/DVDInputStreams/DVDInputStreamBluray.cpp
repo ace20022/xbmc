@@ -1289,6 +1289,16 @@ void CDVDInputStreamBluray::SetupPlayerSettings()
   m_dll->bd_set_player_setting(m_bd, BLURAY_PLAYER_SETTING_PARENTAL, 99);
   m_dll->bd_set_player_setting(m_bd, BLURAY_PLAYER_SETTING_PLAYER_PROFILE, BLURAY_PLAYER_PROFILE_5_v2_4);
   m_dll->bd_set_player_setting(m_bd, BLURAY_PLAYER_SETTING_3D_CAP, 0xffffffff);
+  m_dll->bd_set_player_setting(m_bd, BLURAY_PLAYER_SETTING_OUTPUT_PREFER, BLURAY_OUTPUT_PREFER_3D);
+  m_dll->bd_set_player_setting(m_bd, BLURAY_PLAYER_SETTING_DISPLAY_CAP, BLURAY_DCAP_1080p_720p_3D |
+    BLURAY_DCAP_720p_50Hz_3D |
+    BLURAY_DCAP_NO_3D_CLASSES_REQUIRED |
+    BLURAY_DCAP_INTERLACED_3D |
+    0);
+  m_dll->bd_set_player_setting(m_bd, BLURAY_PLAYER_SETTING_UHD_CAP, 0xffffffff);
+  m_dll->bd_set_player_setting(m_bd, BLURAY_PLAYER_SETTING_UHD_DISPLAY_CAP, 0xffffffff);
+  m_dll->bd_set_player_setting(m_bd, BLURAY_PLAYER_SETTING_HDR_PREFERENCE, 0xffffffff);
+    m_dll->bd_set_player_setting(m_bd, BLURAY_PLAYER_SETTING_SDR_CONV_PREFER,0);
 
   std::string langCode;
   g_LangCodeExpander.ConvertToISO6392T(g_langInfo.GetDVDAudioLanguage(), langCode);
