@@ -241,8 +241,8 @@ bool CEdl::ReadEdl(const std::string& strMovie, const float fFramesPerSecond)
       continue;
 
     Cut cut;
-    cut.start = iCutStartEnd[0];
-    cut.end = iCutStartEnd[1];
+    cut.start = static_cast<int>(iCutStartEnd[0]);
+    cut.end = static_cast<int>(iCutStartEnd[1]);
 
     switch (iAction)
     {
@@ -768,12 +768,12 @@ int CEdl::RemoveCutTime(int iSeek) const
   return iSeek - iCutTime;
 }
 
-double CEdl::RestoreCutTime(double dClock) const
+int CEdl::RestoreCutTime(int iClock) const
 {
   if (!HasCut())
-    return dClock;
+    return iClock;
 
-  double dSeek = dClock;
+  double dSeek = iClock;
   for (int i = 0; i < (int)m_vecCuts.size(); i++)
   {
     if (m_vecCuts[i].action == CUT && dSeek >= m_vecCuts[i].start)

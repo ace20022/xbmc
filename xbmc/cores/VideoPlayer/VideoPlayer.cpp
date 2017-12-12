@@ -1301,28 +1301,28 @@ void CVideoPlayer::Prepare()
   {
     if (m_playerOptions.startpercent > 0 && m_pDemuxer)
     {
-      int playerStartTime = (int)( ( (float) m_pDemuxer->GetStreamLength() ) * ( m_playerOptions.startpercent/(float)100 ) );
+      int playerStartTime = static_cast<int>(m_pDemuxer->GetStreamLength()) * ( m_playerOptions.startpercent/100 );
       starttime = m_Edl.RestoreCutTime(playerStartTime);
     }
     else
     {
-      starttime = m_Edl.RestoreCutTime(static_cast<int>(m_playerOptions.starttime * 1000)); // s to ms
+      starttime = m_Edl.RestoreCutTime(m_playerOptions.starttime * 1000); // s to ms
     }
-    CLog::Log(LOGDEBUG, "%s - Start position set to last stopped position: %d", __FUNCTION__, starttime);
+    CLog::Log(LOGDEBUG, "%s - Start position set to last stopped position: %i", __FUNCTION__, starttime);
   }
   else if (m_Edl.InCut(starttime, &cut))
   {
     if (cut.action == CEdl::CUT)
     {
       starttime = cut.end;
-      CLog::Log(LOGDEBUG, "%s - Start position set to end of first cut: %d", __FUNCTION__, starttime);
+      CLog::Log(LOGDEBUG, "%s - Start position set to end of first cut: %i", __FUNCTION__, starttime);
     }
     else if (cut.action == CEdl::COMM_BREAK)
     {
       if (m_SkipCommercials)
       {
         starttime = cut.end;
-        CLog::Log(LOGDEBUG, "%s - Start position set to end of first commercial break: %d", __FUNCTION__, starttime);
+        CLog::Log(LOGDEBUG, "%s - Start position set to end of first commercial break: %i", __FUNCTION__, starttime);
       }
 
       std::string strTimeString = StringUtils::SecondsToTimeString(cut.end / 1000, TIME_FORMAT_MM_SS);
@@ -1335,7 +1335,7 @@ void CVideoPlayer::Prepare()
     double startpts = DVD_NOPTS_VALUE;
     if (m_pDemuxer)
     {
-      if (m_pDemuxer->SeekTime(starttime, true, &startpts))
+      if (m_pDemuxer->SeekTime(static_cast<double>(starttime), true, &startpts))
         CLog::Log(LOGDEBUG, "%s - starting demuxer from: %d", __FUNCTION__, starttime);
       else
         CLog::Log(LOGDEBUG, "%s - failed to start demuxing from: %d", __FUNCTION__, starttime);
@@ -1343,7 +1343,7 @@ void CVideoPlayer::Prepare()
 
     if (m_pSubtitleDemuxer)
     {
-      if(m_pSubtitleDemuxer->SeekTime(starttime, true, &startpts))
+      if(m_pSubtitleDemuxer->SeekTime(static_cast<double>(starttime), true, &startpts))
         CLog::Log(LOGDEBUG, "%s - starting subtitle demuxer from: %d", __FUNCTION__, starttime);
       else
         CLog::Log(LOGDEBUG, "%s - failed to start subtitle demuxing from: %d", __FUNCTION__, starttime);
