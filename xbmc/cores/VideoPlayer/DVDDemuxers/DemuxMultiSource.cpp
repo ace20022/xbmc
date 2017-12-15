@@ -184,8 +184,11 @@ DemuxPacket* CDemuxMultiSource::Read()
     double readTime = 0;
     if (packet->dts != DVD_NOPTS_VALUE)
       readTime = packet->dts;
-    else
+    else if (packet->pts != DVD_NOPTS_VALUE)
       readTime = packet->pts;
+    else
+
+
     m_demuxerQueue.push(std::make_pair(readTime, currentDemuxer));
   }
   else
