@@ -720,7 +720,7 @@ bool CEdl::AddCut(Cut& cut)
   return true;
 }
 
-bool CEdl::AddSceneMarker(const int iSceneMarker)
+bool CEdl::AddSceneMarker(const int64_t iSceneMarker)
 {
   Cut cut;
 
@@ -739,12 +739,12 @@ bool CEdl::HasCut() const
   return !m_vecCuts.empty();
 }
 
-int CEdl::GetTotalCutTime() const
+int64_t CEdl::GetTotalCutTime() const
 {
   return m_iTotalCutTime; // ms
 }
 
-int CEdl::RemoveCutTime(int iSeek) const
+int64_t CEdl::RemoveCutTime(int64_t iSeek) const
 {
   if (!HasCut())
     return iSeek;
@@ -754,7 +754,7 @@ int CEdl::RemoveCutTime(int iSeek) const
    * requested is later than the end of the last recorded cut. For example, when calculating the
    * total duration for display.
    */
-  int iCutTime = 0;
+  int64_t iCutTime = 0;
   for (int i = 0; i < (int)m_vecCuts.size(); i++)
   {
     if (m_vecCuts[i].action == CUT)
@@ -768,16 +768,16 @@ int CEdl::RemoveCutTime(int iSeek) const
   return iSeek - iCutTime;
 }
 
-double CEdl::RestoreCutTime(double dClock) const
+int64_t CEdl::RestoreCutTime(int64_t dClock) const
 {
   if (!HasCut())
     return dClock;
 
-  double dSeek = dClock;
+  int64_t dSeek = dClock;
   for (int i = 0; i < (int)m_vecCuts.size(); i++)
   {
     if (m_vecCuts[i].action == CUT && dSeek >= m_vecCuts[i].start)
-      dSeek += static_cast<double>(m_vecCuts[i].end - m_vecCuts[i].start);
+      dSeek += m_vecCuts[i].end - m_vecCuts[i].start;
   }
 
   return dSeek;
@@ -822,7 +822,7 @@ std::string CEdl::GetInfo() const
   return strInfo;
 }
 
-bool CEdl::InCut(const int iSeek, Cut *pCut)
+bool CEdl::InCut(const int64_t iSeek, Cut *pCut)
 {
   for (int i = 0; i < (int)m_vecCuts.size(); i++)
   {
@@ -840,17 +840,17 @@ bool CEdl::InCut(const int iSeek, Cut *pCut)
   return false;
 }
 
-int CEdl::GetLastCutTime() const
+int64_t CEdl::GetLastCutTime() const
 {
   return m_lastCutTime;
 }
 
-void CEdl::SetLastCutTime(const int iCutTime)
+void CEdl::SetLastCutTime(const int64_t iCutTime)
 {
   m_lastCutTime = iCutTime;
 }
 
-bool CEdl::GetNearestCut(bool bPlus, const int iSeek, Cut *pCut) const
+bool CEdl::GetNearestCut(bool bPlus, const int64_t iSeek, Cut *pCut) const
 {
   if (bPlus) 
   {
@@ -895,14 +895,14 @@ bool CEdl::GetNearestCut(bool bPlus, const int iSeek, Cut *pCut) const
   }
 }
 
-bool CEdl::GetNextSceneMarker(bool bPlus, const int iClock, int *iSceneMarker)
+bool CEdl::GetNextSceneMarker(bool bPlus, const int64_t iClock, int64_t *iSceneMarker)
 {
   if (!HasSceneMarker())
     return false;
 
-  int iSeek = RestoreCutTime(iClock);
+  int64_t iSeek = RestoreCutTime(iClock);
 
-  int iDiff = 10 * 60 * 60 * 1000; // 10 hours to ms.
+  int64_t iDiff = 10 * 60 * 60 * 1000; // 10 hours to ms.
   bool bFound = false;
 
   if (bPlus) // Find closest scene forwards
@@ -941,7 +941,7 @@ bool CEdl::GetNextSceneMarker(bool bPlus, const int iClock, int *iSceneMarker)
   return bFound;
 }
 
-std::string CEdl::MillisecondsToTimeString(const int iMilliseconds)
+std::string CEdl::MillisecondsToTimeString(const int64_t iMilliseconds)
 {
   std::string strTimeString = StringUtils::SecondsToTimeString((long)(iMilliseconds / 1000), TIME_FORMAT_HH_MM_SS); // milliseconds to seconds
   strTimeString += StringUtils::Format(".%03i", iMilliseconds % 1000);

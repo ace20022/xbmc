@@ -38,8 +38,8 @@ public:
 
   struct Cut
   {
-    int start; // ms
-    int end;   // ms
+    int64_t start; // ms
+    int64_t end;   // ms
     Action action;
   };
 
@@ -49,25 +49,25 @@ public:
   bool HasCut() const;
   bool HasSceneMarker() const;
   std::string GetInfo() const;
-  int GetTotalCutTime() const;
-  int RemoveCutTime(int iSeek) const;
-  double RestoreCutTime(double dClock) const;
+  int64_t GetTotalCutTime() const;
+  int64_t RemoveCutTime(int64_t iSeek) const;
+  int64_t RestoreCutTime(int64_t dClock) const;
 
-  bool InCut(int iSeek, Cut *pCut = NULL);
-  bool GetNearestCut(bool bPlus, const int iSeek, Cut *pCut) const;
+  bool InCut(int64_t iSeek, Cut *pCut = NULL);
+  bool GetNearestCut(bool bPlus, const int64_t iSeek, Cut *pCut) const;
 
-  int GetLastCutTime() const;
-  void SetLastCutTime(const int iCutTime);
+  int64_t GetLastCutTime() const;
+  void SetLastCutTime(const int64_t iCutTime);
 
-  bool GetNextSceneMarker(bool bPlus, const int iClock, int *iSceneMarker);
+  bool GetNextSceneMarker(bool bPlus, const int64_t iClock, int64_t *iSceneMarker);
 
-  static std::string MillisecondsToTimeString(const int iMilliseconds);
+  static std::string MillisecondsToTimeString(const int64_t iMilliseconds);
 
 private:
-  int m_iTotalCutTime; // ms
+  int64_t m_iTotalCutTime; // ms
   std::vector<Cut> m_vecCuts;
-  std::vector<int> m_vecSceneMarkers;
-  int m_lastCutTime;
+  std::vector<int64_t> m_vecSceneMarkers;
+  int64_t m_lastCutTime;
 
   bool ReadEdl(const std::string& strMovie, const float fFramesPerSecond);
   bool ReadComskip(const std::string& strMovie, const float fFramesPerSecond);
@@ -76,7 +76,7 @@ private:
   bool ReadPvr(const std::string& strMovie);
 
   bool AddCut(Cut& NewCut);
-  bool AddSceneMarker(const int sceneMarker);
+  bool AddSceneMarker(const int64_t sceneMarker);
 
   void MergeShortCommBreaks();
 };

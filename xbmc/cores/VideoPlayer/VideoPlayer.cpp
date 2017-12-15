@@ -1295,40 +1295,7 @@ void CVideoPlayer::Prepare()
    * if there was a start time specified as part of the "Start from where last stopped" (aka
    * auto-resume) feature or if there is an EDL cut or commercial break that starts at time 0.
    */
-  CEdl::Cut cut;
-  int starttime = 0;
-  if (m_playerOptions.starttime > 0 || m_playerOptions.startpercent > 0)
-  {
-    if (m_playerOptions.startpercent > 0 && m_pDemuxer)
-    {
-      int playerStartTime = (int)( ( (float) m_pDemuxer->GetStreamLength() ) * ( m_playerOptions.startpercent/(float)100 ) );
-      starttime = m_Edl.RestoreCutTime(playerStartTime);
-    }
-    else
-    {
-      starttime = m_Edl.RestoreCutTime(static_cast<int>(m_playerOptions.starttime * 1000)); // s to ms
-    }
-    CLog::Log(LOGDEBUG, "%s - Start position set to last stopped position: %d", __FUNCTION__, starttime);
-  }
-  else if (m_Edl.InCut(starttime, &cut))
-  {
-    if (cut.action == CEdl::CUT)
-    {
-      starttime = cut.end;
-      CLog::Log(LOGDEBUG, "%s - Start position set to end of first cut: %d", __FUNCTION__, starttime);
-    }
-    else if (cut.action == CEdl::COMM_BREAK)
-    {
-      if (m_SkipCommercials)
-      {
-        starttime = cut.end;
-        CLog::Log(LOGDEBUG, "%s - Start position set to end of first commercial break: %d", __FUNCTION__, starttime);
-      }
-
-      std::string strTimeString = StringUtils::SecondsToTimeString(cut.end / 1000, TIME_FORMAT_MM_SS);
-      CGUIDialogKaiToast::QueueNotification(g_localizeStrings.Get(25011), strTimeString);
-    }
-  }
+  double starttime = CalculateStartTime();
 
   if (starttime > 0)
   {
@@ -1355,6 +1322,42 @@ void CVideoPlayer::Prepare()
   UpdatePlayState(0);
 
   SetCaching(CACHESTATE_FLUSH);
+}
+
+double CVideoPlayer::CalculateStartTime()
+{
+  CEdl::Cut cut;
+  int64_t starttime = 0;
+  if (m_playerOptions.starttime > 0 || m_playerOptions.startpercent > 0)
+  {
+    if (m_playerOptions.startpercent > 0 && m_pDemuxer)
+      starttime = static_cast<int64_t>(m_pDemuxer->GetStreamLength() * (m_playerOptions.startpercent / 100));
+    else
+      starttime = static_cast<int64_t>(m_playerOptions.starttime * 1000); // s to ms
+
+    starttime = m_Edl.RestoreCutTime(starttime);
+    CLog::Log(LOGDEBUG, "%s - Start position set to last stopped position: %" PRIi64, __FUNCTION__, starttime);
+  }
+  else if (m_Edl.InCut(starttime, &cut))
+  {
+    if (cut.action == CEdl::CUT)
+    {
+      starttime = cut.end;
+      CLog::Log(LOGDEBUG, "%s - Start position set to end of first cut: %" PRIi64, __FUNCTION__, starttime);
+    }
+    else if (cut.action == CEdl::COMM_BREAK)
+    {
+      if (m_SkipCommercials)
+      {
+        starttime = cut.end;
+        CLog::Log(LOGDEBUG, "%s - Start position set to end of first commercial break: %" PRIi64, __FUNCTION__, starttime);
+      }
+
+      std::string strTimeString = StringUtils::SecondsToTimeString(cut.end / 1000, TIME_FORMAT_MM_SS);
+      CGUIDialogKaiToast::QueueNotification(g_localizeStrings.Get(25011), strTimeString);
+    }
+  }
+  return static_cast<double>(starttime);
 }
 
 void CVideoPlayer::Process()
@@ -2376,7 +2379,7 @@ void CVideoPlayer::CheckAutoSceneSkip()
                   CEdl::MillisecondsToTimeString(clock).c_str());
 
         CDVDMsgPlayerSeek::CMode mode;
-        mode.time = cut.end;
+        mode.time = static_cast<double>(cut.end);
         mode.backward = true;
         mode.accurate = true;
         mode.restore = false;
@@ -3157,14 +3160,14 @@ bool CVideoPlayer::SeekScene(bool bPlus)
   if (!bPlus && clock > 5 * 1000) // 5 seconds
     clock -= 5 * 1000;
 
-  int iScenemarker;
+  int64_t iScenemarker;
   if (m_Edl.GetNextSceneMarker(bPlus, clock, &iScenemarker))
   {
     /*
      * Seeking is flushed and inaccurate, just like Seek()
      */
     CDVDMsgPlayerSeek::CMode mode;
-    mode.time = iScenemarker;
+    mode.time = static_cast<double>(iScenemarker);
     mode.backward = !bPlus;
     mode.accurate = false;
     mode.restore = false;

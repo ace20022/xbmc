@@ -486,6 +486,11 @@ protected:
   void UpdateContent();
   void UpdateContentState();
 
+  /** \brief Calculates the start time of the demuxer considering auto-resume,
+  *          EDL cuts or commercial breaks that start at time 0.
+  */
+  double CalculateStartTime();
+
   bool m_players_created;
 
   CFileItem m_item;
