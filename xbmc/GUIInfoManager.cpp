@@ -6518,7 +6518,7 @@ std::string CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *
       if (window)
       {
         const CFileItemList& items=static_cast<CGUIMediaWindow*>(window)->CurrentDirectory();
-        int count=0;
+        int64_t count=0;
         for (int i=0;i<items.Size();++i)
         {
           // Iterate through container and count watched, unwatched and total duration.
@@ -6535,7 +6535,7 @@ std::string CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *
         if (info == CONTAINER_TOTALTIME && count > 0)
           return StringUtils::SecondsToTimeString(count);
         else if (info == CONTAINER_TOTALWATCHED || info == CONTAINER_TOTALUNWATCHED)
-          return StringUtils::Format("%i", count);
+          return StringUtils::Format("%" PRIi64, count);
       }
     }
     break;

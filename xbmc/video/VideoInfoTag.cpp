@@ -1137,7 +1137,12 @@ void CVideoInfoTag::ParseNative(const TiXmlElement* movie, bool prioritise)
         XMLUtils::GetFloat(nodeDetail, "aspect", p->m_fAspect);
         XMLUtils::GetInt(nodeDetail, "width", p->m_iWidth);
         XMLUtils::GetInt(nodeDetail, "height", p->m_iHeight);
-        XMLUtils::GetInt(nodeDetail, "durationinseconds", p->m_iDuration);
+
+        double duration = 0;
+        XMLUtils::GetDouble(nodeDetail, "durationinseconds", duration);
+        p->m_iDuration = std::max(duration, 
+          static_cast<double>(std::numeric_limits<int64_t>::max()));
+
         if (XMLUtils::GetString(nodeDetail, "stereomode", value))
           p->m_strStereoMode = StringUtils::Trim(value);
         if (XMLUtils::GetString(nodeDetail, "language", value))

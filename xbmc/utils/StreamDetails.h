@@ -59,7 +59,7 @@ public:
   int m_iWidth;
   int m_iHeight;
   float m_fAspect;
-  int m_iDuration;
+  int64_t m_iDuration;
   std::string m_strCodec;
   std::string m_strStereoMode;
   std::string m_strLanguage;
@@ -114,8 +114,8 @@ public:
   float GetVideoAspect(int idx = 0) const;
   int GetVideoWidth(int idx = 0) const;
   int GetVideoHeight(int idx = 0) const;
-  int GetVideoDuration(int idx = 0) const;
-  void SetVideoDuration(int idx, const int duration);
+  int64_t GetVideoDuration(int idx = 0) const;
+  void SetVideoDuration(int idx, const int64_t duration);
   std::string GetStereoMode(int idx = 0) const;
   std::string GetVideoLanguage(int idx = 0) const;
 

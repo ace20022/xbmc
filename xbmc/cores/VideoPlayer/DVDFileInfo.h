@@ -36,7 +36,7 @@ public:
   // Extract a thumbnail image from the media at strPath, optionally populating a streamdetails class with the data
   static bool ExtractThumb(const std::string &strPath,
                            CTextureDetails &details,
-                           CStreamDetails *pStreamDetails, int pos=-1);
+                           CStreamDetails *pStreamDetails, int64_t pos=-1);
 
   // Probe the files streams and store the info in the VideoInfoTag
   static bool GetFileStreamDetails(CFileItem *pItem);
@@ -47,7 +47,7 @@ public:
   */
   static bool DemuxerToStreamDetails(CDVDInputStream *pInputStream, CDVDDemux *pDemuxer, const std::vector<CStreamDetailSubtitle> &subs, CStreamDetails &details);
 
-  static bool GetFileDuration(const std::string &path, int &duration);
+  static bool GetFileDuration(const std::string &path, int64_t &duration);
 
   /** \brief Probe the streams of an external subtitle file and store the info in the StreamDetails parameter.
   *   \param[out] details The external subtitle file's StreamDetails.

@@ -399,7 +399,7 @@ int CStreamDetails::GetVideoHeight(int idx) const
     return 0;
 }
 
-int CStreamDetails::GetVideoDuration(int idx) const
+int64_t CStreamDetails::GetVideoDuration(int idx /*= 0*/) const
 {
   const CStreamDetailVideo *item = static_cast<const CStreamDetailVideo*>(GetNthStream(CStreamDetail::VIDEO, idx));
   if (item)
@@ -408,7 +408,7 @@ int CStreamDetails::GetVideoDuration(int idx) const
     return 0;
 }
 
-void CStreamDetails::SetVideoDuration(int idx, const int duration)
+void CStreamDetails::SetVideoDuration(int idx, const int64_t duration)
 {
   CStreamDetailVideo *item = const_cast<CStreamDetailVideo*>(static_cast<const CStreamDetailVideo*>(GetNthStream(CStreamDetail::VIDEO, idx)));
   if (item)

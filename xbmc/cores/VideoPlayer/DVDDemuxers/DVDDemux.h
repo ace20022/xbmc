@@ -294,7 +294,7 @@ public:
   /*
    * returns the total time in msec
    */
-  virtual int GetStreamLength() { return 0; }
+  virtual int64_t GetStreamLength() { return 0; }
 
   /*
    * returns the stream or NULL on error

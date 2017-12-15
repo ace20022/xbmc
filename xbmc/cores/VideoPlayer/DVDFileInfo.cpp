@@ -60,7 +60,7 @@ extern "C" {
 #include "libavformat/avformat.h"
 }
 
-bool CDVDFileInfo::GetFileDuration(const std::string &path, int& duration)
+bool CDVDFileInfo::GetFileDuration(const std::string &path, int64_t &duration)
 {
   std::unique_ptr<CDVDInputStream> input;
   std::unique_ptr<CDVDDemux> demux;
@@ -101,7 +101,7 @@ int DegreeToOrientation(int degrees)
 
 bool CDVDFileInfo::ExtractThumb(const std::string &strPath,
                                 CTextureDetails &details,
-                                CStreamDetails *pStreamDetails, int pos)
+                                CStreamDetails *pStreamDetails, int64_t pos/*=-1*/)
 {
   std::string redactPath = CURL::GetRedacted(strPath);
   unsigned int nTime = XbmcThreads::SystemClockMillis();
@@ -212,8 +212,8 @@ bool CDVDFileInfo::ExtractThumb(const std::string &strPath,
 
     if (pVideoCodec)
     {
-      int nTotalLen = pDemuxer->GetStreamLength();
-      int nSeekTo = (pos==-1) ? nTotalLen / 3 : pos;
+      double nTotalLen = static_cast<double>(pDemuxer->GetStreamLength());
+      double nSeekTo = static_cast<double>((pos==-1) ? nTotalLen / 3 : pos);
 
       CLog::Log(LOGDEBUG,"%s - seeking to pos %dms (total: %dms) in %s", __FUNCTION__, nSeekTo, nTotalLen, redactPath.c_str());
       if (pDemuxer->SeekTime(nSeekTo, true))
@@ -417,7 +417,7 @@ bool CDVDFileInfo::DemuxerToStreamDetails(CDVDInputStream *pInputStream, CDVDDem
         // skip first path as we already know the duration
         for (int i = 1; i < files.Size(); i++)
         {
-           int duration = 0;
+           int64_t duration = 0;
            if (CDVDFileInfo::GetFileDuration(files[i]->GetDynPath(), duration))
              p->m_iDuration = p->m_iDuration + duration;
         }

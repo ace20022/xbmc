@@ -3043,7 +3043,7 @@ PlayBackRet CApplication::PlayStack(const CFileItem& item, bool bRestart)
 
     // first assume values passed to the stack
     int selectedFile = item.m_lStartPartNumber;
-    int startoffset = item.m_lStartOffset;
+    int64_t startoffset = item.m_lStartOffset;
 
     // check if we instructed the stack to resume from default
     if (startoffset == STARTOFFSET_RESUME) // selected file is not specified, pick the 'last' resume point
@@ -3056,7 +3056,7 @@ PlayBackRet CApplication::PlayStack(const CFileItem& item, bool bRestart)
           path = item.GetProperty("original_listitem_url").asString();
         if( dbs.GetResumeBookMark(path, bookmark) )
         {
-          startoffset = (int)(bookmark.timeInSeconds*75);
+          startoffset = static_cast<int64_t>(bookmark.timeInSeconds*75);
           selectedFile = bookmark.partNumber;
         }
         dbs.Close();
@@ -3092,7 +3092,7 @@ PlayBackRet CApplication::PlayStack(const CFileItem& item, bool bRestart)
     //!       Also, this is really just a hack for the slow load up times we have
     //!       A much better solution is a fast reader of FPS and fileLength
     //!       that we can use on a file to get it's time.
-    std::vector<int> times;
+    std::vector<int64_t> times;
     bool haveTimes(false);
     CVideoDatabase dbs;
     if (dbs.Open())
@@ -3106,14 +3106,14 @@ PlayBackRet CApplication::PlayStack(const CFileItem& item, bool bRestart)
     CStackDirectory dir;
     if (!dir.GetDirectory(item.GetURL(), *m_currentStack) || m_currentStack->IsEmpty())
       return PLAYBACK_FAIL;
-    long totalTime = 0;
+    int64_t totalTime = 0;
     for (int i = 0; i < m_currentStack->Size(); i++)
     {
       if (haveTimes)
         (*m_currentStack)[i]->m_lEndOffset = times[i];
       else
       {
-        int duration;
+        int64_t duration;
         if (!CDVDFileInfo::GetFileDuration((*m_currentStack)[i]->GetPath(), duration))
         {
           m_currentStack->Clear();
@@ -3161,8 +3161,8 @@ PlayBackRet CApplication::PlayStack(const CFileItem& item, bool bRestart)
         if (seconds < (*m_currentStack)[i]->m_lEndOffset)
         {
           CFileItem item(*(*m_currentStack)[i]);
-          long start = (i > 0) ? (*m_currentStack)[i-1]->m_lEndOffset : 0;
-          item.m_lStartOffset = (long)(seconds - start) * 75;
+          int64_t start = (i > 0) ? (*m_currentStack)[i-1]->m_lEndOffset : 0;
+          item.m_lStartOffset = static_cast<int64_t>((seconds - start) * 75);
           m_currentStackPosition = i;
           return PlayFile(item, "", true);
         }
@@ -4695,7 +4695,7 @@ double CApplication::GetTotalTime() const
   if (m_pPlayer->IsPlaying())
   {
     if (m_itemCurrentFile->IsStack() && m_currentStack->Size() > 0)
-      rc = (*m_currentStack)[m_currentStack->Size() - 1]->m_lEndOffset;
+      rc = static_cast<double>((*m_currentStack)[m_currentStack->Size() - 1]->m_lEndOffset);
     else
       rc = static_cast<double>(m_pPlayer->GetTotalTime() * 0.001f);
   }
@@ -4729,8 +4729,8 @@ double CApplication::GetTime() const
   {
     if (m_itemCurrentFile->IsStack() && m_currentStack->Size() > 0)
     {
-      long startOfCurrentFile = (m_currentStackPosition > 0) ? (*m_currentStack)[m_currentStackPosition-1]->m_lEndOffset : 0;
-      rc = (double)startOfCurrentFile + m_pPlayer->GetTime() * 0.001;
+      int64_t startOfCurrentFile = (m_currentStackPosition > 0) ? (*m_currentStack)[m_currentStackPosition-1]->m_lEndOffset : 0;
+      rc = static_cast<double>(startOfCurrentFile + m_pPlayer->GetTime() * 0.001);
     }
     else
       rc = static_cast<double>(m_pPlayer->GetTime() * 0.001f);
@@ -4759,14 +4759,14 @@ void CApplication::SeekTime( double dTime )
       {
         if ((*m_currentStack)[i]->m_lEndOffset > dTime)
         {
-          long startOfNewFile = (i > 0) ? (*m_currentStack)[i-1]->m_lEndOffset : 0;
+          int64_t startOfNewFile = (i > 0) ? (*m_currentStack)[i-1]->m_lEndOffset : 0;
           if (m_currentStackPosition == i)
             m_pPlayer->SeekTime((int64_t)((dTime - startOfNewFile) * 1000.0));
           else
           { // seeking to a new file
             m_currentStackPosition = i;
             CFileItem *item = new CFileItem(*(*m_currentStack)[i]);
-            item->m_lStartOffset = static_cast<long>((dTime - startOfNewFile) * 75.0);
+            item->m_lStartOffset = static_cast<int64_t>((dTime - startOfNewFile) * 75.0);
             // don't just call "PlayFile" here, as we are quite likely called from the
             // player thread, so we won't be able to delete ourselves.
             CApplicationMessenger::GetInstance().PostMsg(TMSG_MEDIA_PLAY, 1, 0, static_cast<void*>(item));

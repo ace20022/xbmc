@@ -114,9 +114,9 @@ std::string CDemuxMultiSource::GetStreamCodecName(int64_t demuxerId, int iStream
     return "";
 };
 
-int CDemuxMultiSource::GetStreamLength()
+int64_t CDemuxMultiSource::GetStreamLength()
 {
-  int length = 0;
+  int64_t length = 0;
   for (auto& iter : m_demuxerMap)
   {
     length = std::max(length, iter.second->GetStreamLength());

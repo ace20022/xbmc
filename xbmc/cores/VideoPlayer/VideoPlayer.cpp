@@ -4589,7 +4589,7 @@ void CVideoPlayer::UpdatePlayState(double timeout)
     }
 
     state.time = m_clock.GetClock(false) * 1000 / DVD_TIME_BASE;
-    state.timeMax = m_pDemuxer->GetStreamLength();
+    state.timeMax = static_cast<double>(m_pDemuxer->GetStreamLength());
   }
 
   state.canpause = true;

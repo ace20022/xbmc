@@ -1224,7 +1224,7 @@ void CDVDDemuxFFmpeg::UpdateCurrentPTS()
   }
 }
 
-int CDVDDemuxFFmpeg::GetStreamLength()
+int64_t CDVDDemuxFFmpeg::GetStreamLength()
 {
   if (!m_pFormatContext)
     return 0;
@@ -1232,7 +1232,7 @@ int CDVDDemuxFFmpeg::GetStreamLength()
   if (m_pFormatContext->duration < 0)
     return 0;
 
-  return (int)(m_pFormatContext->duration / (AV_TIME_BASE / 1000));
+  return m_pFormatContext->duration / (AV_TIME_BASE / 1000);
 }
 
 /**
