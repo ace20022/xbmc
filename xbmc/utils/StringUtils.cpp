@@ -863,26 +863,27 @@ long StringUtils::TimeStringToSeconds(const std::string &timeString)
   }
 }
 
-std::string StringUtils::SecondsToTimeString(long lSeconds, TIME_FORMAT format)
+std::string StringUtils::SecondsToTimeString(int64_t seconds, TIME_FORMAT format /*= TIME_FORMAT_GUESS*/)
 {
-  bool isNegative = lSeconds < 0;
-  lSeconds = std::abs(lSeconds);
-  int hh = lSeconds / 3600;
-  lSeconds = lSeconds % 3600;
-  int mm = lSeconds / 60;
-  int ss = lSeconds % 60;
+  bool isNegative = seconds < 0;
+
+  seconds = std::abs(seconds);
+  int64_t hh = seconds / 3600;
+  seconds = seconds % 3600;
+  int64_t mm = seconds / 60;
+  int64_t ss = seconds % 60;
 
   if (format == TIME_FORMAT_GUESS)
     format = (hh >= 1) ? TIME_FORMAT_HH_MM_SS : TIME_FORMAT_MM_SS;
   std::string strHMS;
   if (format & TIME_FORMAT_HH)
-    strHMS += StringUtils::Format("%2.2i", hh);
+    strHMS += StringUtils::Format("%2.2" PRIi64, hh);
   else if (format & TIME_FORMAT_H)
-    strHMS += StringUtils::Format("%i", hh);
+    strHMS += StringUtils::Format("%" PRIi64, hh);
   if (format & TIME_FORMAT_MM)
-    strHMS += StringUtils::Format(strHMS.empty() ? "%2.2i" : ":%2.2i", mm);
+    strHMS += StringUtils::Format(strHMS.empty() ? "%2.2" PRIi64 : ":%2.2" PRIi64, mm);
   if (format & TIME_FORMAT_SS)
-    strHMS += StringUtils::Format(strHMS.empty() ? "%2.2i" : ":%2.2i", ss);
+    strHMS += StringUtils::Format(strHMS.empty() ? "%2.2" PRIi64 : ":%2.2" PRIi64, ss);
   if (isNegative)
     strHMS = "-" + strHMS;
   return strHMS;

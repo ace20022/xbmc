@@ -239,7 +239,7 @@ public:
    \return the formatted time
    \sa TIME_FORMAT
    */
-  static std::string SecondsToTimeString(long seconds, TIME_FORMAT format = TIME_FORMAT_GUESS);
+  static std::string SecondsToTimeString(int64_t seconds, TIME_FORMAT format = TIME_FORMAT_GUESS);
 
   /*! \brief check whether a string is a natural number.
    Matches [ \t]*[0-9]+[ \t]*
