@@ -50,7 +50,7 @@ void CDemuxMultiSource::Dispose()
   m_demuxerMap.clear();
   m_DemuxerToInputStreamMap.clear();
   m_pInput = NULL;
-
+  m_rts = 0;
 }
 
 void CDemuxMultiSource::EnableStream(int64_t demuxerId, int id, bool enable)
@@ -183,13 +183,23 @@ DemuxPacket* CDemuxMultiSource::Read()
   {
     double readTime = 0;
     if (packet->dts != DVD_NOPTS_VALUE)
-      readTime = packet->dts;
+    {
+      CLog::Log(LOGDEBUG, "id: %d, duration: %f, Diff: %f", packet->iStreamId, packet->duration ,packet->dts - m_rts);
+      m_rts = packet->dts;
+
+    }
     else if (packet->pts != DVD_NOPTS_VALUE)
-      readTime = packet->pts;
+    {
+      CLog::Log(LOGDEBUG, "id: %d, duration: %f, Diff: %f", packet->iStreamId, packet->duration, packet->pts - m_rts);
+      m_rts = packet->pts;
+    }
     else
+    {
+      CLog::Log(LOGDEBUG, "id: %d, duration: %f, old rts: %" PRIu32, packet->iStreamId, packet->duration, m_rts);
+      m_rts += packet->duration;
+    }
 
-
-    m_demuxerQueue.push(std::make_pair(readTime, currentDemuxer));
+    m_demuxerQueue.push(std::make_pair(m_rts, currentDemuxer));
   }
   else
   {

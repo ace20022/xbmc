@@ -72,4 +72,9 @@ private:
   std::map<DemuxPtr, InputStreamPtr> m_DemuxerToInputStreamMap;
   DemuxQueue m_demuxerQueue;
   std::map<int64_t, DemuxPtr> m_demuxerMap;
+
+  /*
+  * read time stamp as fallback for streams with invalid dts and pts.
+  */
+  uint32_t m_rts = 0 ;
 };
