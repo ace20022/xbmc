@@ -112,7 +112,10 @@ public:
   CDVDInputStream::IPosTime* GetIPosTime() override { return this; }
   bool PosTime(int ms) override;
 
-  void GetStreamInfo(int pid, std::string &language);
+  /*
+  * returns true if the pid is known and the info could be retrieved
+  */
+  bool GetStreamInfo(int pid, std::string &language);
 
   void OverlayCallback(const BD_OVERLAY * const);
 #ifdef HAVE_LIBBLURAY_BDJ

@@ -1138,21 +1138,27 @@ static bool find_stream(int pid, BLURAY_STREAM_INFO *info, int count, std::strin
   return true;
 }
 
-void CDVDInputStreamBluray::GetStreamInfo(int pid, std::string &language)
+bool CDVDInputStreamBluray::GetStreamInfo(int pid, std::string &language)
 {
   if(!m_title || m_clip >= m_title->clip_count)
-    return;
+    return false;
 
   BLURAY_CLIP_INFO *clip = m_title->clips+m_clip;
 
   if(find_stream(pid, clip->audio_streams, clip->audio_stream_count, language))
-    return;
+    return true;
   if(find_stream(pid, clip->video_streams, clip->video_stream_count, language))
-    return;
+    return true;
   if(find_stream(pid, clip->pg_streams, clip->pg_stream_count, language))
-    return;
+    return true;
   if(find_stream(pid, clip->ig_streams, clip->ig_stream_count, language))
-    return;
+    return true;
+  if (find_stream(pid, clip->sec_audio_streams, clip->sec_audio_stream_count, language))
+    return true;
+  if (find_stream(pid, clip->sec_video_streams, clip->sec_video_stream_count, language))
+    return true;
+
+  return false;
 }
 
 CDVDInputStream::ENextStream CDVDInputStreamBluray::NextStream()
