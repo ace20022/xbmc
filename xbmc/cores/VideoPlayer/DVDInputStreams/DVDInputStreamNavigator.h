@@ -83,8 +83,8 @@ public:
   SubtitleStreamInfo GetSubtitleStreamInfo(const int iId);
 
   bool SetActiveSubtitleStream(int iId);
-  void EnableSubtitleStream(bool bEnable);
-  bool IsSubtitleStreamEnabled();
+  void EnableSubtitleStream(bool bEnable) override;
+  bool IsSubtitleStreamEnabled() override;
 
   int GetActiveAudioStream();
   int GetAudioStreamCount();

@@ -114,6 +114,11 @@ public:
     virtual double GetTimeStampCorrection() { return 0.0; };
     virtual bool GetState(std::string &xmlstate) = 0;
     virtual bool SetState(const std::string &xmlstate) = 0;
+    virtual bool SetAudioStream(int streamId) { return false; };
+    virtual bool SetSubtitleStream(int streamId) { return false; };
+    virtual bool SetVideoStream(int streamId) { return false; };
+    virtual void EnableSubtitleStream(bool bEnable) { return; };
+    virtual bool IsSubtitleStreamEnabled() { return false; };
   };
 
   class IDemux
@@ -184,6 +189,7 @@ public:
   virtual IPosTime* GetIPosTime() { return nullptr; }
   virtual IDisplayTime* GetIDisplayTime() { return nullptr; }
   virtual ITimes* GetITimes() { return nullptr; }
+  virtual IMenus* GetIMenus() { return nullptr; }
 
   const CVariant &GetProperty(const std::string key){ return m_item.GetProperty(key); }
 
