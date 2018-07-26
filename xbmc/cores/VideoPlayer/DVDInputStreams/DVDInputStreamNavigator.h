@@ -81,17 +81,18 @@ public:
   int GetActiveSubtitleStream();
   int GetSubTitleStreamCount();
   SubtitleStreamInfo GetSubtitleStreamInfo(const int iId);
-
-  bool SetActiveSubtitleStream(int iId);
+  bool SetSubtitleStream(int streamId) override;
   void EnableSubtitleStream(bool bEnable) override;
   bool IsSubtitleStreamEnabled() override;
 
   int GetActiveAudioStream();
   int GetAudioStreamCount();
-  int GetActiveAngle();
-  bool SetAngle(int angle);
-  bool SetActiveAudioStream(int iId);
+  bool SetAudioStream(int streamId) override;
   AudioStreamInfo GetAudioStreamInfo(const int iId);
+
+  int GetActiveAngle();
+  VideoStreamInfo GetVideoStreamInfo();
+  bool SetVideoStream(int streamId) override;
 
   bool GetState(std::string &xmlstate) override;
   bool SetState(const std::string &xmlstate) override;
@@ -116,7 +117,7 @@ public:
 
   void CheckButtons();
 
-  VideoStreamInfo GetVideoStreamInfo();
+  CDVDInputStream::IMenus* GetIMenus() override { return this; }
 
 protected:
 
