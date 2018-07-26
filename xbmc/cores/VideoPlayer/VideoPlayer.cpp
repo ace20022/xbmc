@@ -511,8 +511,12 @@ void CSelectionStreams::Update(std::shared_ptr<CDVDInputStream> input, CDVDDemux
       /* make sure stream is marked with right source */
       stream->source = source;
 
+      int selectionSource = source;
+      if (input && input->IsStreamType(DVDSTREAM_TYPE_BLURAY))
+        selectionSource = Source(STREAM_SOURCE_NAV, filename);
+
       SelectionStream s;
-      s.source   = source;
+      s.source   = selectionSource;
       s.type     = stream->type;
       s.id       = stream->uniqueId;
       s.demuxerId = stream->demuxerId;
@@ -2805,6 +2809,13 @@ void CVideoPlayer::HandleMessages()
             UpdateContentState();
             CServiceBroker::GetDataCacheCore().SignalVideoInfoChange();
           }
+          else if (m_pInputStream->IsStreamType(DVDSTREAM_TYPE_BLURAY))
+          {
+            m_dvd.iSelectedVideoStream = st.type_index;
+            CloseStream(m_CurrentVideo, false);
+            OpenStream(m_CurrentVideo, st.demuxerId, st.id, STREAM_SOURCE_DEMUX);
+            seek = true;
+          }
         }
         else
         {
@@ -4019,6 +4030,7 @@ int CVideoPlayer::OnDiscNavResult(void* pData, int iMessage)
 
     case BD_EVENT_PG_TEXTST_STREAM:
       m_dvd.iSelectedSPUStream = *static_cast<int*>(pData);
+      m_dvd.iSelectedLogicalSPUStream = *static_cast<int*>(pData);
       break;
     case BD_EVENT_PG_TEXTST:
     {

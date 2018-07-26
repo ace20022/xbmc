@@ -101,6 +101,10 @@ public:
   CDVDInputStream::IPosTime* GetIPosTime() override { return this; }
   bool PosTime(int ms) override;
 
+  CDVDInputStream::IMenus* GetIMenus() override;
+  bool SetAudioStream(int streamId) override;
+  bool SetSubtitleStream(int streamId) override;
+
   void GetStreamInfo(int pid, std::string &language);
 
   void OverlayCallback(const BD_OVERLAY * const);
