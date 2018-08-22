@@ -394,7 +394,7 @@ int CSelectionStreams::IndexOf(StreamType type, int source, int64_t demuxerId, i
     return -1;
 }
 
-int CSelectionStreams::IndexOf(StreamType type, int type_id) const
+/*int CSelectionStreams::IndexOf(StreamType type, int type_id) const
 {
   int count = -1;
   for (auto stream : m_Streams)
@@ -411,7 +411,7 @@ int CSelectionStreams::IndexOf(StreamType type, int type_id) const
     return count;
   else
     return -1;
-}
+}*/
 
 int CSelectionStreams::Source(StreamSource source, std::string filename)
 {
@@ -455,6 +455,10 @@ void CSelectionStreams::Update(std::shared_ptr<CDVDInputStream> input, CDVDDemux
     std::string filename = nav->GetFileName();
     int source = Source(STREAM_SOURCE_NAV, filename);
 
+    int demuxerId = -1;
+    if (demuxer)
+      demuxerId = demuxer->GetDemuxerId();
+
     int count;
     count = nav->GetAudioStreamCount();
     for (int i = 0; i < count; i++)
@@ -471,6 +475,7 @@ void CSelectionStreams::Update(std::shared_ptr<CDVDInputStream> input, CDVDDemux
       s.language = g_LangCodeExpander.ConvertToISO6392B(info.language);
       s.channels = info.channels;
       s.flags = info.flags;
+      s.demuxerId = demuxerId;
       Update(s);
     }
 
@@ -488,6 +493,7 @@ void CSelectionStreams::Update(std::shared_ptr<CDVDInputStream> input, CDVDDemux
       s.name     = info.name;
       s.flags = info.flags;
       s.language = g_LangCodeExpander.ConvertToISO6392B(info.language);
+      s.demuxerId = demuxerId;
       Update(s);
     }
 
@@ -506,6 +512,7 @@ void CSelectionStreams::Update(std::shared_ptr<CDVDInputStream> input, CDVDDemux
       s.height = info.height;
       s.codec = info.codecName;
       s.name = StringUtils::Format("%s %i", g_localizeStrings.Get(38032).c_str(), i);
+      s.demuxerId = demuxerId;
       Update(s);
     }
   }
@@ -2865,9 +2872,12 @@ void CVideoPlayer::HandleMessages()
           CDVDInputStream::IMenus* menu = m_pInputStream->GetIMenus();
           if (menu->SetSubtitleStream(st.type_index))
           {
-            m_dvd.iSelectedSPUStream = st.type_index;
-            m_dvd.iSelectedLogicalSPUStream = st.type_index;
-            CloseStream(m_CurrentSubtitle, false);
+            m_dvd.iSelectedSPUStream = st.id;
+            m_dvd.iSelectedLogicalSPUStream = st.id;
+            // it might take some time till the next spu packet arrives
+            UpdateContentState();
+            CServiceBroker::GetDataCacheCore().SignalVideoInfoChange();
+            CloseStream(m_CurrentSubtitle, false);         
           }
         }
         else
@@ -5064,7 +5074,8 @@ void CVideoPlayer::UpdateContentState()
 
   if (m_pInputStream && m_pInputStream->GetIMenus())
   {
-    m_content.m_videoIndex = m_SelectionStreams.IndexOf(STREAM_VIDEO, m_dvd.iSelectedVideoStream);
+    m_content.m_videoIndex = m_SelectionStreams.IndexOf(STREAM_VIDEO, STREAM_SOURCE_NAV,
+      m_CurrentVideo.demuxerId, m_dvd.iSelectedVideoStream);
 
     // might be an external source
     if (m_content.m_videoIndex == -1)
@@ -5073,7 +5084,8 @@ void CVideoPlayer::UpdateContentState()
         m_CurrentVideo.demuxerId, m_CurrentVideo.id);
     }
 
-    m_content.m_audioIndex = m_SelectionStreams.IndexOf(STREAM_AUDIO, m_dvd.iSelectedAudioStream);
+    m_content.m_audioIndex = m_SelectionStreams.IndexOf(STREAM_AUDIO, STREAM_SOURCE_NAV,
+      m_CurrentAudio.demuxerId, m_dvd.iSelectedAudioStream);
 
     // might be an external source
     if (m_content.m_audioIndex == -1)
@@ -5082,7 +5094,8 @@ void CVideoPlayer::UpdateContentState()
         m_CurrentAudio.demuxerId, m_CurrentAudio.id);
     }
 
-    m_content.m_subtitleIndex = m_SelectionStreams.IndexOf(STREAM_SUBTITLE, m_dvd.iSelectedLogicalSPUStream);
+    m_content.m_subtitleIndex = m_SelectionStreams.IndexOf(STREAM_SUBTITLE, STREAM_SOURCE_NAV,
+      m_CurrentSubtitle.demuxerId, m_dvd.iSelectedLogicalSPUStream);
 
     // might be an external source
     if (m_content.m_subtitleIndex == -1)
