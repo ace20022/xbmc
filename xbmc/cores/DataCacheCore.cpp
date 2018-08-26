@@ -16,7 +16,7 @@ CDataCacheCore::CDataCacheCore() :
   m_renderInfo {},
   m_stateInfo {}
 {
-  m_hasAVInfoChanges = false;
+  m_hasAVSInfoChanges = false;
 }
 
 CDataCacheCore& CDataCacheCore::GetInstance()
@@ -36,26 +36,26 @@ void CDataCacheCore::Reset()
   m_playerStateChanged = false;
 }
 
-bool CDataCacheCore::HasAVInfoChanges()
+bool CDataCacheCore::HasAVSInfoChanges()
 {
-  bool ret = m_hasAVInfoChanges;
-  m_hasAVInfoChanges = false;
+  bool ret = m_hasAVSInfoChanges;
+  m_hasAVSInfoChanges = false;
   return ret;
 }
 
 void CDataCacheCore::SignalVideoInfoChange()
 {
-  m_hasAVInfoChanges = true;
+  m_hasAVSInfoChanges = true;
 }
 
 void CDataCacheCore::SignalAudioInfoChange()
 {
-  m_hasAVInfoChanges = true;
+  m_hasAVSInfoChanges = true;
 }
 
 void CDataCacheCore::SignalSubtitleInfoChange()
 {
-  m_hasAVInfoChanges = true;
+  m_hasAVSInfoChanges = true;
 }
 
 void CDataCacheCore::SetVideoDecoderName(std::string name, bool isHw)

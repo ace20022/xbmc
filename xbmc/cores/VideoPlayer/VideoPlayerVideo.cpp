@@ -825,7 +825,7 @@ CVideoPlayerVideo::EOutputState CVideoPlayerVideo::OutputPicture(const VideoPict
   {
     m_processInfo.SetVideoStereoMode(pPicture->stereoMode);
     // signal about changes in video parameters
-    m_messageParent.Put(new CDVDMsg(CDVDMsg::PLAYER_AVCHANGE));
+    m_messageParent.Put(new CDVDMsg(CDVDMsg::PLAYER_AVSCHANGE));
   }
 
   double config_framerate = m_bFpsInvalid ? 0.0 : m_fFrameRate;

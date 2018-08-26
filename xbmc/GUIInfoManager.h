@@ -123,7 +123,7 @@ public:
   // Current video stuff
   const CVideoInfoTag* GetCurrentMovieTag() const;
 
-  void UpdateAVInfo();
+  void UpdateAVSInfo();
 
   int RegisterSkinVariableString(const INFO::CSkinVariableString* info);
   int TranslateSkinVariableString(const std::string& name, int context);

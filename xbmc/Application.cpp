@@ -3494,19 +3494,19 @@ void CApplication::OnAVStarted(const CFileItem &file)
   CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::Player, "xbmc", "OnAVStart", m_itemCurrentFile, param);
 }
 
-void CApplication::OnAVChange()
+void CApplication::OnAVSChange()
 {
-  CLog::LogF(LOGDEBUG, "CApplication::OnAVChange");
+  CLog::LogF(LOGDEBUG, "CApplication::OnAVSChange");
 
   CServiceBroker::GetGUI()->GetStereoscopicsManager().OnStreamChange();
 
-  CGUIMessage msg(GUI_MSG_PLAYBACK_AVCHANGE, 0, 0);
+  CGUIMessage msg(GUI_MSG_PLAYBACK_AVSCHANGE, 0, 0);
   CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);
 
   CVariant param;
   param["player"]["speed"] = 1;
   param["player"]["playerid"] = CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist();
-  CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::Player, "xbmc", "OnAVChange", m_itemCurrentFile, param);
+  CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::Player, "xbmc", "OnAVSChange", m_itemCurrentFile, param);
 }
 
 void CApplication::RequestVideoSettings(const CFileItem &fileItem)
@@ -4133,11 +4133,11 @@ bool CApplication::OnMessage(CGUIMessage& message)
 #endif
     return true;
 
-  case GUI_MSG_PLAYBACK_AVCHANGE:
+  case GUI_MSG_PLAYBACK_AVSCHANGE:
 #ifdef HAS_PYTHON
     // informs python script currently running playback has started
     // (does nothing if python is not loaded)
-    g_pythonParser.OnAVChange();
+    g_pythonParser.OnAVSChange();
 #endif
       return true;
 

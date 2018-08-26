@@ -59,7 +59,7 @@ public:
   void OnPlayBackEnded() override;
   void OnPlayBackStarted(const CFileItem &file) override;
   void OnAVStarted(const CFileItem &file) override;
-  void OnAVChange() override;
+  void OnAVSChange() override;
   void OnPlayBackPaused() override;
   void OnPlayBackResumed() override;
   void OnPlayBackStopped() override;

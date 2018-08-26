@@ -6831,9 +6831,9 @@ void CGUIInfoManager::Clear()
     CLog::Log(LOGDEBUG, "Infobool '%s' still used by %u instances", (*i)->GetExpression().c_str(), (unsigned int) i->use_count());
 }
 
-void CGUIInfoManager::UpdateAVInfo()
+void CGUIInfoManager::UpdateAVSInfo()
 {
-  if (CServiceBroker::GetDataCacheCore().HasAVInfoChanges())
+  if (CServiceBroker::GetDataCacheCore().HasAVSInfoChanges())
   {
     VideoStreamInfo video;
     AudioStreamInfo audio;
@@ -6843,7 +6843,7 @@ void CGUIInfoManager::UpdateAVInfo()
     g_application.GetAppPlayer().GetAudioStreamInfo(CURRENT_STREAM, audio);
     g_application.GetAppPlayer().GetSubtitleStreamInfo(CURRENT_STREAM, subtitle);
 
-    m_infoProviders.UpdateAVInfo(audio, video, subtitle);
+    m_infoProviders.UpdateAVSInfo(audio, video, subtitle);
   }
 }
 

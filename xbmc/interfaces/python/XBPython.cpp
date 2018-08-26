@@ -131,14 +131,14 @@ void XBPython::OnAVStarted(const CFileItem &file)
 }
 
 // message all registered callbacks that we changed stream
-void XBPython::OnAVChange()
+void XBPython::OnAVSChange()
 {
   XBMC_TRACE;
   LOCK_AND_COPY(std::vector<void*>, tmp, m_vecPlayerCallbackList);
   for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
   {
     if (CHECK_FOR_ENTRY(m_vecPlayerCallbackList, (*it)))
-      ((IPlayerCallback*)(*it))->OnAVChange();
+      ((IPlayerCallback*)(*it))->OnAVSChange();
   }
 }
 

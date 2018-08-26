@@ -3023,14 +3023,14 @@ void CVideoPlayer::HandleMessages()
       if (static_cast<CDVDMsgGeneralSynchronize*>(pMsg)->Wait(100, SYNCSOURCE_PLAYER))
         CLog::Log(LOGDEBUG, "CVideoPlayer - CDVDMsg::GENERAL_SYNCHRONIZE");
     }
-    else if (pMsg->IsType(CDVDMsg::PLAYER_AVCHANGE))
+    else if (pMsg->IsType(CDVDMsg::PLAYER_AVSCHANGE))
     {
       CServiceBroker::GetDataCacheCore().SignalAudioInfoChange();
       CServiceBroker::GetDataCacheCore().SignalVideoInfoChange();
       CServiceBroker::GetDataCacheCore().SignalSubtitleInfoChange();
       IPlayerCallback *cb = &m_callback;
       m_outboundEvents->Submit([=]() {
-        cb->OnAVChange();
+        cb->OnAVSChange();
       });
     }
     else if (pMsg->IsType(CDVDMsg::PLAYER_ABORT))
@@ -4925,7 +4925,7 @@ bool CVideoPlayer::RenderCaptureGetPixels(unsigned int captureId, unsigned int m
 
 void CVideoPlayer::VideoParamsChange()
 {
-  m_messenger.Put(new CDVDMsg(CDVDMsg::PLAYER_AVCHANGE));
+  m_messenger.Put(new CDVDMsg(CDVDMsg::PLAYER_AVSCHANGE));
 }
 
 void CVideoPlayer::GetDebugInfo(std::string &audio, std::string &video, std::string &general)

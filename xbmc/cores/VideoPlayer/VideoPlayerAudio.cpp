@@ -140,7 +140,7 @@ void CVideoPlayerAudio::OpenStream(CDVDStreamInfo &hints, CDVDAudioCodec* codec)
 
   m_maxspeedadjust = 5.0;
 
-  m_messageParent.Put(new CDVDMsg(CDVDMsg::PLAYER_AVCHANGE));
+  m_messageParent.Put(new CDVDMsg(CDVDMsg::PLAYER_AVSCHANGE));
   m_syncState = IDVDStreamPlayer::SYNC_STARTING;
 }
 
@@ -536,7 +536,7 @@ bool CVideoPlayerAudio::ProcessDecoderOutput(DVDAudioFrame &audioframe)
       m_processInfo.SetAudioSampleRate(audioframe.format.m_sampleRate);
       m_processInfo.SetAudioBitsPerSample(audioframe.bits_per_sample);
       m_processInfo.SetAudioDecoderName(m_pAudioCodec->GetName());
-      m_messageParent.Put(new CDVDMsg(CDVDMsg::PLAYER_AVCHANGE));
+      m_messageParent.Put(new CDVDMsg(CDVDMsg::PLAYER_AVSCHANGE));
     }
   }
 

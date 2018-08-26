@@ -103,7 +103,7 @@ public:
    * @param videoInfo New video stream info.
    * @param subtitleInfo New subtitle stream info.
    */
-  void UpdateAVInfo(const AudioStreamInfo& audioInfo, const VideoStreamInfo& videoInfo, const SubtitleStreamInfo& subtitleInfo);
+  void UpdateAVSInfo(const AudioStreamInfo& audioInfo, const VideoStreamInfo& videoInfo, const SubtitleStreamInfo& subtitleInfo);
 
   /*!
    * @brief Get the player guiinfo provider.

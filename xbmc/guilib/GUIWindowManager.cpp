@@ -1285,7 +1285,7 @@ void CGUIWindowManager::FrameMove()
     window->FrameMove();
   }
 
-  CServiceBroker::GetGUI()->GetInfoManager().UpdateAVInfo();
+  CServiceBroker::GetGUI()->GetInfoManager().UpdateAVSInfo();
 }
 
 CGUIDialog* CGUIWindowManager::GetDialog(int id) const

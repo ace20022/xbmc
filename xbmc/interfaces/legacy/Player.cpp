@@ -194,10 +194,10 @@ namespace XBMCAddon
       invokeCallback(new CallbackFunction<Player>(this, &Player::onAVStarted));
     }
 
-    void Player::OnAVChange()
+    void Player::OnAVSChange()
     {
       XBMC_TRACE;
-      invokeCallback(new CallbackFunction<Player>(this, &Player::onAVChange));
+      invokeCallback(new CallbackFunction<Player>(this, &Player::onAVSChange));
     }
 
     void Player::OnPlayBackEnded()
@@ -264,7 +264,7 @@ namespace XBMCAddon
       XBMC_TRACE;
     }
 
-    void Player::onAVChange()
+    void Player::onAVSChange()
     {
       XBMC_TRACE;
     }

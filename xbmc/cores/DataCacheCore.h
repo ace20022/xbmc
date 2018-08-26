@@ -18,7 +18,7 @@ public:
   CDataCacheCore();
   static CDataCacheCore& GetInstance();
   void Reset();
-  bool HasAVInfoChanges();
+  bool HasAVSInfoChanges();
   void SignalVideoInfoChange();
   void SignalAudioInfoChange();
   void SignalSubtitleInfoChange();
@@ -113,7 +113,7 @@ public:
   int64_t GetMaxTime();
 
 protected:
-  std::atomic_bool m_hasAVInfoChanges;
+  std::atomic_bool m_hasAVSInfoChanges;
 
   CCriticalSection m_videoPlayerSection;
   struct SPlayerVideoInfo

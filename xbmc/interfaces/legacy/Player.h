@@ -232,15 +232,15 @@ namespace XBMCAddon
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
       /// \ingroup python_PlayerCB
-      /// @brief \python_func{ onAVChange() }
+      /// @brief \python_func{ onAVSChange() }
       ///-----------------------------------------------------------------------
-      /// onAVChange method.
+      /// onAVSChange method.
       ///
-      /// Will be called when Kodi has a video- or audiostream. Also happens when the stream changes.
+      /// Will be called when Kodi has a video-, audio- or subtitlestream. Also happens when the stream changes.
       ///
-      onAVChange();
+      onAVSChange();
 #else
-      virtual void onAVChange();
+      virtual void onAVSChange();
 #endif
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
@@ -796,7 +796,7 @@ namespace XBMCAddon
 #if !defined SWIG && !defined DOXYGEN_SHOULD_SKIP_THIS
       SWIGHIDDENVIRTUAL void OnPlayBackStarted(const CFileItem &file) override;
       SWIGHIDDENVIRTUAL void OnAVStarted(const CFileItem &file) override;
-      SWIGHIDDENVIRTUAL void OnAVChange() override;
+      SWIGHIDDENVIRTUAL void OnAVSChange() override;
       SWIGHIDDENVIRTUAL void OnPlayBackEnded() override;
       SWIGHIDDENVIRTUAL void OnPlayBackStopped() override;
       SWIGHIDDENVIRTUAL void OnPlayBackError() override;
