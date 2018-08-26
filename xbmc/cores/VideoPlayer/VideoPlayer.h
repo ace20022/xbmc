@@ -227,6 +227,7 @@ struct SelectionStream
   StreamFlags flags = StreamFlags::FLAG_NONE;
   int source = 0;
   int id = 0;
+  int discNavId = -1;
   int64_t demuxerId = -1;
   std::string codec;
   int channels = 0;

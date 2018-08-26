@@ -380,7 +380,7 @@ int CSelectionStreams::TypeIndexOf(StreamType type, int source, int64_t demuxerI
 
   auto it = std::find_if(m_Streams.begin(), m_Streams.end(),
     [&](const SelectionStream& stream) {return stream.type == type
-    && stream.source == source && stream.id == id
+    && stream.source == source && ((STREAM_SOURCE_MASK(source) == STREAM_SOURCE_NAV) ? (stream.discNavId == id) : (stream.id == id))
     && stream.demuxerId == demuxerId;});
 
   if (it != m_Streams.end())
@@ -512,13 +512,14 @@ void CSelectionStreams::Update(std::shared_ptr<CDVDInputStream> input, CDVDDemux
       stream->source = source;
 
       int selectionSource = source;
-      if (input && input->IsStreamType(DVDSTREAM_TYPE_BLURAY))
+      if (input && input->GetIMenus())
         selectionSource = Source(STREAM_SOURCE_NAV, filename);
 
       SelectionStream s;
       s.source   = selectionSource;
       s.type     = stream->type;
       s.id       = stream->uniqueId;
+      s.discNavId = stream->dvdNavId;
       s.demuxerId = stream->demuxerId;
       s.language = g_LangCodeExpander.ConvertToISO6392B(stream->language);
       s.flags    = stream->flags;
@@ -5055,6 +5056,26 @@ void CVideoPlayer::UpdateContent()
 void CVideoPlayer::UpdateContentState()
 {
   CSingleLock lock(m_content.m_section);
+
+  if (m_dvd.iSelectedVideoStream == -1)
+    m_content.m_videoIndex = m_SelectionStreams.TypeIndexOf(STREAM_VIDEO, m_CurrentVideo.source,
+      m_CurrentVideo.demuxerId, m_CurrentVideo.id);
+  else
+    m_content.m_videoIndex = m_dvd.iSelectedVideoStream;
+
+  if (m_dvd.iSelectedAudioStream == -1)
+    m_content.m_audioIndex = m_SelectionStreams.TypeIndexOf(STREAM_AUDIO, m_CurrentAudio.source,
+      m_CurrentAudio.demuxerId, m_CurrentAudio.id);
+  else
+    m_content.m_audioIndex = m_dvd.iSelectedAudioStream;
+
+  if (m_dvd.iSelectedLogicalSPUStream == -1)
+    m_content.m_subtitleIndex = m_SelectionStreams.TypeIndexOf(STREAM_SUBTITLE, m_CurrentSubtitle.source,
+      m_CurrentSubtitle.demuxerId, m_CurrentSubtitle.id);
+  else
+    m_content.m_subtitleIndex = m_dvd.iSelectedLogicalSPUStream;
+
+  return;
 
   if (m_pInputStream && m_pInputStream->GetIMenus())
   {
