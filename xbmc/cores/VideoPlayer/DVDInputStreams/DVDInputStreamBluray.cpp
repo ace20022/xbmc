@@ -486,6 +486,7 @@ void CDVDInputStreamBluray::ProcessEvent() {
     CLog::Log(LOGDEBUG, "CDVDInputStreamBluray - BD_EVENT_PG_TEXTST %d",
         m_event.param);
     pid = m_event.param;
+    m_subtitlesEnabled = (m_event.param != 0);
     m_player->OnDiscNavResult(static_cast<void*>(&pid), BD_EVENT_PG_TEXTST);
     break;
 
@@ -499,6 +500,7 @@ void CDVDInputStreamBluray::ProcessEvent() {
         "CDVDInputStreamBluray - BD_EVENT_PG_TEXTST_STREAM %d, %d",
         m_event.param, pid);
     pid = m_event.param - 1;
+    m_currentSubtitle = m_event.param;
     m_player->OnDiscNavResult(static_cast<void*>(&pid), BD_EVENT_PG_TEXTST_STREAM);
     break;
 
@@ -1151,7 +1153,7 @@ bool CDVDInputStreamBluray::OpenStream(CFileItem &item)
 
 bool CDVDInputStreamBluray::SetAudioStream(int streamId)
 {
-  if (!m_bd || !m_title || m_clip >= m_title->clip_count)
+  if (streamId < 0 || !m_bd || !m_title || m_clip >= m_title->clip_count)
     return false;
 
   BLURAY_CLIP_INFO *clip = m_title->clips + m_clip;
@@ -1165,16 +1167,28 @@ bool CDVDInputStreamBluray::SetAudioStream(int streamId)
 
 bool CDVDInputStreamBluray::SetSubtitleStream(int streamId)
 {
-  if (!m_bd || !m_title || m_clip >= m_title->clip_count)
+  if (streamId < 0 || !m_bd || !m_title || m_clip >= m_title->clip_count)
     return false;
 
   BLURAY_CLIP_INFO *clip = m_title->clips + m_clip;
   if (streamId > clip->pg_stream_count)
     return false;
 
-  bd_select_stream(m_bd, BLURAY_PG_TEXTST_STREAM, (streamId + 1), 1);
+  bd_select_stream(m_bd, BLURAY_PG_TEXTST_STREAM, (streamId + 1), 0);
 
   return true;
+}
+
+void CDVDInputStreamBluray::EnableSubtitleStream(bool bEnable)
+{
+  if (m_currentSubtitle == 0 || !m_bd || !m_title || m_clip >= m_title->clip_count)
+    return;
+
+  BLURAY_CLIP_INFO *clip = m_title->clips + m_clip;
+  if (m_currentSubtitle > clip->pg_stream_count)
+    return;
+
+  bd_select_stream(m_bd, BLURAY_PG_TEXTST_STREAM, m_currentSubtitle, static_cast<uint32_t>(bEnable));
 }
 
 CDVDInputStream::IMenus* CDVDInputStreamBluray::GetIMenus()

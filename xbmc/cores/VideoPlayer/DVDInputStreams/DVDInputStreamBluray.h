@@ -82,7 +82,10 @@ public:
   void SkipStill() override;
   bool GetState(std::string &xmlstate) override { return false; }
   bool SetState(const std::string &xmlstate) override { return false; }
-
+  CDVDInputStream::IMenus* GetIMenus() override;
+  bool SetAudioStream(int streamId) override;
+  bool SetSubtitleStream(int streamId) override;
+  void EnableSubtitleStream(bool bEnable) override;
 
   void UserInput(bd_vk_key_e vk);
   bool MouseMove(const CPoint &point);
@@ -100,10 +103,6 @@ public:
 
   CDVDInputStream::IPosTime* GetIPosTime() override { return this; }
   bool PosTime(int ms) override;
-
-  CDVDInputStream::IMenus* GetIMenus() override;
-  bool SetAudioStream(int streamId) override;
-  bool SetSubtitleStream(int streamId) override;
 
   void GetStreamInfo(int pid, std::string &language);
 
@@ -164,4 +163,6 @@ protected:
     void SetupPlayerSettings();
     std::unique_ptr<CDVDInputStreamFile> m_pstream = nullptr;
     std::string m_rootPath;
+    uint32_t m_currentSubtitle;
+    bool m_subtitlesEnabled;
 };
