@@ -452,6 +452,8 @@ void CDVDInputStreamBluray::ProcessEvent() {
   case BD_EVENT_TITLE:
     CLog::Log(LOGDEBUG, "CDVDInputStreamBluray - BD_EVENT_TITLE %d",
         m_event.param);
+    if (m_event.param == 0)
+      m_menu = true;
     break;
 
   case BD_EVENT_PLAYLIST:
