@@ -687,7 +687,7 @@ bool CDVDInputStreamNavigator::SetActiveSubtitleStream(int iId)
   return true;
 }
 
-void CDVDInputStreamNavigator::ActivateButton()
+void CDVDInputStreamNavigator::ActivateButton(int64_t pts)
 {
   if (m_dvdnav)
   {
@@ -695,7 +695,7 @@ void CDVDInputStreamNavigator::ActivateButton()
   }
 }
 
-void CDVDInputStreamNavigator::SelectButton(int iButton)
+void CDVDInputStreamNavigator::SelectButton(int iButton, int64_t pts)
 {
   if (!m_dvdnav) return;
   m_dll.dvdnav_button_select(m_dvdnav, m_dll.dvdnav_get_current_nav_pci(m_dvdnav), iButton);
@@ -770,27 +770,27 @@ int CDVDInputStreamNavigator::GetTotalButtons()
   return counter;
 }
 
-void CDVDInputStreamNavigator::OnUp()
+void CDVDInputStreamNavigator::OnUp(int64_t pts)
 {
   if (m_dvdnav) m_dll.dvdnav_upper_button_select(m_dvdnav, m_dll.dvdnav_get_current_nav_pci(m_dvdnav));
 }
 
-void CDVDInputStreamNavigator::OnDown()
+void CDVDInputStreamNavigator::OnDown(int64_t pts)
 {
   if (m_dvdnav) m_dll.dvdnav_lower_button_select(m_dvdnav, m_dll.dvdnav_get_current_nav_pci(m_dvdnav));
 }
 
-void CDVDInputStreamNavigator::OnLeft()
+void CDVDInputStreamNavigator::OnLeft(int64_t pts)
 {
   if (m_dvdnav) m_dll.dvdnav_left_button_select(m_dvdnav, m_dll.dvdnav_get_current_nav_pci(m_dvdnav));
 }
 
-void CDVDInputStreamNavigator::OnRight()
+void CDVDInputStreamNavigator::OnRight(int64_t pts)
 {
   if (m_dvdnav) m_dll.dvdnav_right_button_select(m_dvdnav, m_dll.dvdnav_get_current_nav_pci(m_dvdnav));
 }
 
-bool CDVDInputStreamNavigator::OnMouseMove(const CPoint &point)
+bool CDVDInputStreamNavigator::OnMouseMove(const CPoint &point, int64_t pts)
 {
   if (m_dvdnav)
   {
@@ -800,7 +800,7 @@ bool CDVDInputStreamNavigator::OnMouseMove(const CPoint &point)
   return false;
 }
 
-bool CDVDInputStreamNavigator::OnMouseClick(const CPoint &point)
+bool CDVDInputStreamNavigator::OnMouseClick(const CPoint &point, int64_t pts)
 {
   if (m_dvdnav)
   {
@@ -810,18 +810,18 @@ bool CDVDInputStreamNavigator::OnMouseClick(const CPoint &point)
   return false;
 }
 
-void CDVDInputStreamNavigator::OnMenu()
+void CDVDInputStreamNavigator::OnMenu(int64_t pts)
 {
   if (m_dvdnav) m_dll.dvdnav_menu_call(m_dvdnav, DVD_MENU_Escape);
 }
 
-void CDVDInputStreamNavigator::OnBack()
+void CDVDInputStreamNavigator::OnBack(int64_t pts)
 {
   if (m_dvdnav) m_dll.dvdnav_go_up(m_dvdnav);
 }
 
 // we don't allow skipping in menu's cause it will remove menu overlays
-void CDVDInputStreamNavigator::OnNext()
+void CDVDInputStreamNavigator::OnNext(int64_t pts)
 {
   if (m_dvdnav && !(IsInMenu() && GetTotalButtons() > 0))
   {
@@ -830,7 +830,7 @@ void CDVDInputStreamNavigator::OnNext()
 }
 
 // we don't allow skipping in menu's cause it will remove menu overlays
-void CDVDInputStreamNavigator::OnPrevious()
+void CDVDInputStreamNavigator::OnPrevious(int64_t pts)
 {
   if (m_dvdnav && !(IsInMenu() && GetTotalButtons() > 0))
   {

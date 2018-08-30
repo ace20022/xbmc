@@ -63,38 +63,37 @@ public:
 
 
   /* IMenus */
-  void ActivateButton() override { UserInput(BD_VK_ENTER); }
-  void SelectButton(int iButton) override
+  void ActivateButton(int64_t pts) override { UserInput(BD_VK_ENTER, pts); }
+  void SelectButton(int iButton, int64_t pts) override
   {
     if(iButton < 10)
-      UserInput((bd_vk_key_e)(BD_VK_0 + iButton));
+      UserInput((bd_vk_key_e)(BD_VK_0 + iButton), pts);
   }
   int  GetCurrentButton() override { return 0; }
   int  GetTotalButtons() override { return 0; }
-  void OnUp() override  { UserInput(BD_VK_UP); }
-  void OnDown() override  { UserInput(BD_VK_DOWN); }
-  void OnLeft() override { UserInput(BD_VK_LEFT); }
-  void OnRight() override { UserInput(BD_VK_RIGHT); }
-  void OnMenu() override;
-  void OnBack() override
+  virtual void OnUp(int64_t pts) { UserInput(BD_VK_UP, pts); }
+  virtual void OnDown(int64_t pts) { UserInput(BD_VK_DOWN, pts); }
+  virtual void OnLeft(int64_t pts) { UserInput(BD_VK_LEFT, pts); }
+  virtual void OnRight(int64_t pts) { UserInput(BD_VK_RIGHT, pts); }
+  virtual void OnMenu(int64_t pts);
+  virtual void OnBack(int64_t pts)
   {
     if(IsInMenu())
-      OnMenu();
+      OnMenu(pts);
   }
-  void OnNext() override {}
-  void OnPrevious() override {}
+  void OnNext(int64_t pts) override {}
+  void OnPrevious(int64_t pts) override {}
   bool HasMenu() override;
   bool IsInMenu() override;
-  bool OnMouseMove(const CPoint &point) override  { return MouseMove(point); }
-  bool OnMouseClick(const CPoint &point) override { return MouseClick(point); }
+  bool OnMouseMove(const CPoint &point, int64_t pts) override  { return MouseMove(point, pts); }
+  bool OnMouseClick(const CPoint &point, int64_t pts) override { return MouseClick(point, pts); }
   void SkipStill() override;
   bool GetState(std::string &xmlstate) override { return false; }
   bool SetState(const std::string &xmlstate) override { return false; }
 
-
-  void UserInput(bd_vk_key_e vk);
-  bool MouseMove(const CPoint &point);
-  bool MouseClick(const CPoint &point);
+  void UserInput(bd_vk_key_e vk, int64_t pts);
+  bool MouseMove(const CPoint &point, int64_t pts);
+  bool MouseClick(const CPoint &point, int64_t pts);
 
   int GetChapter() override;
   int GetChapterCount() override;

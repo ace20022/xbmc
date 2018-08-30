@@ -94,20 +94,20 @@ public:
   {
   public:
     virtual ~IMenus() = default;
-    virtual void ActivateButton() = 0;
-    virtual void SelectButton(int iButton) = 0;
+    virtual void ActivateButton(int64_t pts) = 0;
+    virtual void SelectButton(int iButton, int64_t pts) = 0;
     virtual int  GetCurrentButton() = 0;
     virtual int  GetTotalButtons() = 0;
-    virtual void OnUp() = 0;
-    virtual void OnDown() = 0;
-    virtual void OnLeft() = 0;
-    virtual void OnRight() = 0;
-    virtual void OnMenu() = 0;
-    virtual void OnBack() = 0;
-    virtual void OnNext() = 0;
-    virtual void OnPrevious() = 0;
-    virtual bool OnMouseMove(const CPoint &point) = 0;
-    virtual bool OnMouseClick(const CPoint &point) = 0;
+    virtual void OnUp(int64_t pts) = 0;
+    virtual void OnDown(int64_t pts) = 0;
+    virtual void OnLeft(int64_t pts) = 0;
+    virtual void OnRight(int64_t pts) = 0;
+    virtual void OnMenu(int64_t pts) = 0;
+    virtual void OnBack(int64_t pts) = 0;
+    virtual void OnNext(int64_t pts) = 0;
+    virtual void OnPrevious(int64_t pts) = 0;
+    virtual bool OnMouseMove(const CPoint &point, int64_t pts) = 0;
+    virtual bool OnMouseClick(const CPoint &point, int64_t pts) = 0;
     virtual bool HasMenu() = 0;
     virtual bool IsInMenu() = 0;
     virtual void SkipStill() = 0;

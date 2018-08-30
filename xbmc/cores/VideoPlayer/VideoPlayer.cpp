@@ -4277,7 +4277,7 @@ bool CVideoPlayer::OnAction(const CAction &action)
       {
         THREAD_ACTION(action);
         CLog::Log(LOGDEBUG, " - go to menu");
-        pMenus->OnMenu();
+        pMenus->OnMenu(m_VideoPlayerVideo->GetCurrentPts());
         if (m_playSpeed == DVD_PLAYSPEED_PAUSE)
         {
           SetPlaySpeed(DVD_PLAYSPEED_NORMAL);
@@ -4293,18 +4293,19 @@ bool CVideoPlayer::OnAction(const CAction &action)
 
     if (pMenus->IsInMenu())
     {
+      int64_t pts = m_VideoPlayerVideo->GetCurrentPts();
       switch (action.GetID())
       {
       case ACTION_NEXT_ITEM:
         THREAD_ACTION(action);
         CLog::Log(LOGDEBUG, " - pushed next in menu, stream will decide");
-        pMenus->OnNext();
+        pMenus->OnNext(pts);
         CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetDisplayAfterSeek();
         return true;
       case ACTION_PREV_ITEM:
         THREAD_ACTION(action);
         CLog::Log(LOGDEBUG, " - pushed prev in menu, stream will decide");
-        pMenus->OnPrevious();
+        pMenus->OnPrevious(pts);
         CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetPlayerInfoProvider().SetDisplayAfterSeek();
         return true;
       case ACTION_PREVIOUS_MENU:
@@ -4312,35 +4313,35 @@ bool CVideoPlayer::OnAction(const CAction &action)
         {
           THREAD_ACTION(action);
           CLog::Log(LOGDEBUG, " - menu back");
-          pMenus->OnBack();
+          pMenus->OnBack(pts);
         }
         break;
       case ACTION_MOVE_LEFT:
         {
           THREAD_ACTION(action);
           CLog::Log(LOGDEBUG, " - move left");
-          pMenus->OnLeft();
+          pMenus->OnLeft(pts);
         }
         break;
       case ACTION_MOVE_RIGHT:
         {
           THREAD_ACTION(action);
           CLog::Log(LOGDEBUG, " - move right");
-          pMenus->OnRight();
+          pMenus->OnRight(pts);
         }
         break;
       case ACTION_MOVE_UP:
         {
           THREAD_ACTION(action);
           CLog::Log(LOGDEBUG, " - move up");
-          pMenus->OnUp();
+          pMenus->OnUp(pts);
         }
         break;
       case ACTION_MOVE_DOWN:
         {
           THREAD_ACTION(action);
           CLog::Log(LOGDEBUG, " - move down");
-          pMenus->OnDown();
+          pMenus->OnDown(pts);
         }
         break;
 
@@ -4360,7 +4361,7 @@ bool CVideoPlayer::OnAction(const CAction &action)
           pt += CPoint(rs.x1, rs.y1);
           if (action.GetID() == ACTION_MOUSE_LEFT_CLICK)
           {
-            if (pMenus->OnMouseClick(pt))
+            if (pMenus->OnMouseClick(pt, pts))
               return true;
             else
             {
@@ -4368,7 +4369,7 @@ bool CVideoPlayer::OnAction(const CAction &action)
               return false;
             }
           }
-          return pMenus->OnMouseMove(pt);
+          return pMenus->OnMouseMove(pt, pts);
         }
         break;
       case ACTION_SELECT_ITEM:
@@ -4379,7 +4380,7 @@ bool CVideoPlayer::OnAction(const CAction &action)
           if(m_pInputStream->IsStreamType(DVDSTREAM_TYPE_DVD))
             m_VideoPlayerSubtitle->UpdateOverlayInfo(std::static_pointer_cast<CDVDInputStreamNavigator>(m_pInputStream), LIBDVDNAV_BUTTON_CLICKED);
 
-          pMenus->ActivateButton();
+          pMenus->ActivateButton(pts);
         }
         break;
       case REMOTE_0:
@@ -4397,7 +4398,7 @@ bool CVideoPlayer::OnAction(const CAction &action)
           // Offset from key codes back to button number
           int button = action.GetID() - REMOTE_0;
           CLog::Log(LOGDEBUG, " - button pressed %d", button);
-          pMenus->SelectButton(button);
+          pMenus->SelectButton(button, pts);
         }
        break;
       default:

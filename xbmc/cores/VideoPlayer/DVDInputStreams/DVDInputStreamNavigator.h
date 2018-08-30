@@ -55,20 +55,20 @@ public:
   int64_t GetLength() override { return 0; }
   ENextStream NextStream() override ;
 
-  void ActivateButton() override;
-  void SelectButton(int iButton) override;
+  void ActivateButton(int64_t pts) override;
+  void SelectButton(int iButton, int64_t pts) override;
   void SkipStill() override;
   void SkipWait();
-  void OnUp() override;
-  void OnDown() override;
-  void OnLeft() override;
-  void OnRight() override;
-  void OnMenu() override;
-  void OnBack() override;
-  void OnNext() override;
-  void OnPrevious() override;
-  bool OnMouseMove(const CPoint &point) override;
-  bool OnMouseClick(const CPoint &point) override;
+  void OnUp(int64_t pts) override;
+  void OnDown(int64_t pts) override;
+  void OnLeft(int64_t pts) override;
+  void OnRight(int64_t pts) override;
+  void OnMenu(int64_t pts) override;
+  void OnBack(int64_t pts) override;
+  void OnNext(int64_t pts) override;
+  void OnPrevious(int64_t pts) override;
+  bool OnMouseMove(const CPoint &point, int64_t pts) override;
+  bool OnMouseClick(const CPoint &point, int64_t pts) override;
 
   int GetCurrentButton() override;
   int GetTotalButtons() override;

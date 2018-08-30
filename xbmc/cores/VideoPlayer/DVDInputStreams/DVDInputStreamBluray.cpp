@@ -991,12 +991,12 @@ CDVDInputStream::ENextStream CDVDInputStreamBluray::NextStream()
   return NEXTSTREAM_OPEN;
 }
 
-void CDVDInputStreamBluray::UserInput(bd_vk_key_e vk)
+void CDVDInputStreamBluray::UserInput(bd_vk_key_e vk, int64_t pts)
 {
   if(m_bd == nullptr || !m_navmode)
     return;
 
-  int ret = bd_user_input(m_bd, -1, vk);
+  int ret = bd_user_input(m_bd, static_cast<int64_t>(pts * (90000.0/1000000.0)), vk);
   if (ret < 0)
   {
     CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::UserInput - user input failed");
@@ -1009,12 +1009,12 @@ void CDVDInputStreamBluray::UserInput(bd_vk_key_e vk)
   }
 }
 
-bool CDVDInputStreamBluray::MouseMove(const CPoint &point)
+bool CDVDInputStreamBluray::MouseMove(const CPoint &point, int64_t pts)
 {
   if (m_bd == nullptr || !m_navmode)
     return false;
 
-  if (bd_mouse_select(m_bd, -1, static_cast<uint16_t>(point.x), static_cast<uint16_t>(point.y)) < 0)
+  if (bd_mouse_select(m_bd, static_cast<int64_t>(pts * (90000.0 / 1000000.0)), static_cast<uint16_t>(point.x), static_cast<uint16_t>(point.y)) < 0)
   {
     CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::MouseMove - mouse select failed");
     return false;
@@ -1023,25 +1023,27 @@ bool CDVDInputStreamBluray::MouseMove(const CPoint &point)
   return true;
 }
 
-bool CDVDInputStreamBluray::MouseClick(const CPoint &point)
+bool CDVDInputStreamBluray::MouseClick(const CPoint &point, int64_t pts)
 {
   if (m_bd == nullptr || !m_navmode)
     return false;
 
-  if (bd_mouse_select(m_bd, -1, static_cast<uint16_t>(point.x), static_cast<uint16_t>(point.y)) < 0)
+  int64_t conv_pts = static_cast<int64_t>(pts * (90000.0 / 1000000.0));
+
+  if (bd_mouse_select(m_bd, conv_pts, static_cast<uint16_t>(point.x), static_cast<uint16_t>(point.y)) < 0)
   {
     CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::MouseClick - mouse select failed");
     return false;
   }
 
-  if (bd_user_input(m_bd, -1, BD_VK_MOUSE_ACTIVATE) >= 0)
+  if (bd_user_input(m_bd, conv_pts, BD_VK_MOUSE_ACTIVATE) >= 0)
     return true;
 
   CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::MouseClick - mouse click (user input) failed");
   return false;
 }
 
-void CDVDInputStreamBluray::OnMenu()
+void CDVDInputStreamBluray::OnMenu(int64_t pts)
 {
   if(m_bd == nullptr || !m_navmode)
   {
@@ -1049,15 +1051,17 @@ void CDVDInputStreamBluray::OnMenu()
     return;
   }
 
-  if(bd_user_input(m_bd, -1, BD_VK_POPUP) >= 0)
+  int64_t conv_pts = static_cast<int64_t>(pts * (90000.0 / 1000000.0));
+
+  if(bd_user_input(m_bd, conv_pts, BD_VK_POPUP) >= 0)
     return;
   CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::OnMenu - popup failed, trying root");
 
-  if(bd_user_input(m_bd, -1, BD_VK_ROOT_MENU) >= 0)
+  if(bd_user_input(m_bd, conv_pts, BD_VK_ROOT_MENU) >= 0)
     return;
 
   CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::OnMenu - root failed, trying explicit");
-  if(bd_menu_call(m_bd, -1) <= 0)
+  if(bd_menu_call(m_bd, conv_pts) <= 0)
     CLog::Log(LOGDEBUG, "CDVDInputStreamBluray::OnMenu - root failed");
 }
 
