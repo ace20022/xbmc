@@ -86,6 +86,7 @@ public:
   bool SetAudioStream(int streamId) override;
   bool SetSubtitleStream(int streamId) override;
   void EnableSubtitleStream(bool bEnable) override;
+  bool IsSubtitleStreamEnabled() override;
 
   void UserInput(bd_vk_key_e vk);
   bool MouseMove(const CPoint &point);

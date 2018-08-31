@@ -1191,6 +1191,11 @@ void CDVDInputStreamBluray::EnableSubtitleStream(bool bEnable)
   bd_select_stream(m_bd, BLURAY_PG_TEXTST_STREAM, m_currentSubtitle, static_cast<uint32_t>(bEnable));
 }
 
+bool CDVDInputStreamBluray::IsSubtitleStreamEnabled()
+{
+  return m_subtitlesEnabled;
+}
+
 CDVDInputStream::IMenus* CDVDInputStreamBluray::GetIMenus()
 {
   if (m_navmode)
