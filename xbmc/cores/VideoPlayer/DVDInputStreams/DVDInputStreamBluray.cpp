@@ -1174,7 +1174,7 @@ bool CDVDInputStreamBluray::SetSubtitleStream(int streamId)
   if (streamId > clip->pg_stream_count)
     return false;
 
-  bd_select_stream(m_bd, BLURAY_PG_TEXTST_STREAM, (streamId + 1), 0);
+  bd_select_stream(m_bd, BLURAY_PG_TEXTST_STREAM, (streamId + 1), m_subtitlesEnabled);
 
   return true;
 }
