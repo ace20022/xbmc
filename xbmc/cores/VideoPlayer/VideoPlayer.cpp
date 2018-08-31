@@ -3395,10 +3395,10 @@ float CVideoPlayer::GetSubTitleDelay()
 
 bool CVideoPlayer::GetSubtitleVisible()
 {
-  if (m_pInputStream && m_pInputStream->IsStreamType(DVDSTREAM_TYPE_DVD))
+  if (m_pInputStream && m_pInputStream->GetIMenus())
   {
-    std::shared_ptr<CDVDInputStreamNavigator> pStream = std::static_pointer_cast<CDVDInputStreamNavigator>(m_pInputStream);
-    return pStream->IsSubtitleStreamEnabled();
+    CDVDInputStream::IMenus* menu = m_pInputStream->GetIMenus();
+    return menu->IsSubtitleStreamEnabled();
   }
 
   return m_VideoPlayerVideo->IsSubtitleEnabled();
