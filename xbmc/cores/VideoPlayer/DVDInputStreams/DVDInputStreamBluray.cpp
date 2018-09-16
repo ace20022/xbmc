@@ -219,7 +219,20 @@ bool CDVDInputStreamBluray::Open()
   else
   {
     m_rootPath = root;
-    if (!bd_open_files(m_bd, &m_rootPath, CBlurayCallback::dir_open, CBlurayCallback::file_open))
+
+    bool opened = false;
+    if (!URIUtils::IsURL(m_rootPath))
+    {
+      // kodi fs wrappers unnecessary, try direct first
+      if (!bd_open_disc(m_bd, m_rootPath.c_str(), ""))
+      {
+        CLog::Log(LOGERROR, "CDVDInputStreamBluray::Open - bd_open_disc failed for %s", CURL::GetRedacted(root).c_str());
+      }
+      else
+        opened = true;
+    }
+
+    if (!opened && !bd_open_files(m_bd, &m_rootPath, CBlurayCallback::dir_open, CBlurayCallback::file_open))
     {
       CLog::Log(LOGERROR, "CDVDInputStreamBluray::Open - failed to open %s", CURL::GetRedacted(root).c_str());
       return false;
