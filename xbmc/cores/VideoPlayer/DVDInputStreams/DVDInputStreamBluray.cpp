@@ -133,7 +133,7 @@ bool CDVDInputStreamBluray::Open()
   if(m_player == nullptr)
     return false;
 
-  std::string strPath(m_item.GetPath());
+  std::string strPath(m_item.GetDynPath());
   std::string filename;
   std::string root;
 
@@ -187,7 +187,7 @@ bool CDVDInputStreamBluray::Open()
       URIUtils::RemoveSlashAtEnd(strPath);
     }
     root = strPath;
-    filename = URIUtils::GetFileName(m_item.GetPath());
+    filename = URIUtils::GetFileName(m_item.GetDynPath());
   }
 
   // root should not have trailing slash

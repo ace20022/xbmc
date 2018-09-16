@@ -3367,6 +3367,10 @@ void CApplication::OnPlayerCloseFile(const CFileItem &file, const CBookmark &boo
       // also update video info tag with total time
       fileItem.GetVideoInfoTag()->m_streamDetails.SetVideoDuration(0, resumeBookmark.totalTimeInSeconds);
     }
+
+    if (fileItem.IsBluray() && resumeBookmark.playerState.empty())
+      resumeBookmark.playerState = fileItem.GetDynPath();
+
   }
   else
   {
