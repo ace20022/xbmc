@@ -121,12 +121,20 @@ bool CGUIDialogSimpleMenu::ShowPlaySelection(CFileItem& item, const std::string&
       break;
     }
 
-    if (item_new->m_bIsFolder == false)
+    if (!item_new->m_bIsFolder)
     {
       std::string original_path = item.GetPath();
+      item.SetProperty("original_listitem_url", original_path);
+      item.SetDynPath(item_new->GetDynPath());
+      return true;
+
+      std::string original_label = item.GetLabel();
+      const std::wstring original_sort_label = item.GetSortLabel();
       item.Reset();
       item = *item_new;
       item.SetProperty("original_listitem_url", original_path);
+      item.SetLabel(original_label);
+      item.SetSortLabel(original_sort_label);
       return true;
     }
 
